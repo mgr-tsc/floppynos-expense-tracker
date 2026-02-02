@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Border
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:ExpenseTracker.Models"
+    x:Class="ExpenseTracker.Pages.Controls.BalanceView"
+    x:DataType="models:BalanceData"
+    Style="{StaticResource CardStyle}">
+
+    <VerticalStackLayout Spacing="8">
+        <Label Text="Balance"
+               Style="{StaticResource Title2}"
+               SemanticProperties.HeadingLevel="Level2" />
+
+        <Label Text="{Binding Summary}"
+               Style="{StaticResource Title3}"
+               TextColor="{StaticResource Primary}" />
+
+        <Grid ColumnDefinitions="*,*" Margin="0,8,0,0">
+            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                <Label Text="{Binding PersonA.Name, StringFormat='{0} owes'}"
+                       Style="{StaticResource Caption1}" />
+                <Label Text="{Binding PersonAOwes, StringFormat='{0:C2}'}"
+                       Style="{StaticResource Body1Strong}" />
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                <Label Text="{Binding PersonB.Name, StringFormat='{0} owes'}"
+                       Style="{StaticResource Caption1}" />
+                <Label Text="{Binding PersonBOwes, StringFormat='{0:C2}'}"
+                       Style="{StaticResource Body1Strong}" />
+            </VerticalStackLayout>
+        </Grid>
+    </VerticalStackLayout>
+</Border>

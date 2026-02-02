@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
+             xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
+             x:Class="ExpenseTracker.Pages.CardDetailPage"
+             x:DataType="pageModels:CardDetailPageModel"
+             Title="Card">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem
+            Text="Delete"
+            Command="{Binding DeleteCommand}"
+            Order="Primary"
+            Priority="0"
+            IconImageSource="{StaticResource IconDelete}"
+            SemanticProperties.Description="Delete Card" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="{StaticResource LayoutPadding}" Spacing="{StaticResource LayoutSpacing}">
+            <sf:SfTextInputLayout Hint="Provider">
+                <Entry Text="{Binding Provider}" SemanticProperties.Description="Provider" />
+            </sf:SfTextInputLayout>
+
+            <sf:SfTextInputLayout Hint="Alias">
+                <Entry Text="{Binding Alias}" SemanticProperties.Description="Alias" />
+            </sf:SfTextInputLayout>
+
+            <sf:SfTextInputLayout Hint="Last 4 Digits">
+                <Entry Text="{Binding LastFourDigits}"
+                       MaxLength="4"
+                       Keyboard="Numeric"
+                       SemanticProperties.Description="Last four digits" />
+            </sf:SfTextInputLayout>
+
+            <sf:SfTextInputLayout Hint="Owner">
+                <Picker ItemsSource="{Binding Profiles}"
+                        SelectedItem="{Binding SelectedProfile}"
+                        SelectedIndex="{Binding ProfileIndex}"
+                        SemanticProperties.Description="Card owner" />
+            </sf:SfTextInputLayout>
+
+            <Button Text="Save"
+                MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
+                Command="{Binding SaveCommand}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

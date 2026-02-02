@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ExpenseTracker.Pages.LoadingPage"
+             x:DataType="pageModels:LoadingPageModel"
+             x:Name="LoadPage"
+             Shell.NavBarIsVisible="False"
+             Shell.FlyoutItemIsVisible="False"
+             Title="Loading">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+                BindingContext="{Binding Path=BindingContext, Source={x:Reference LoadPage}, x:DataType=ContentPage}"
+                EventName="Appearing"
+                Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
+
+    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
+        <Label Text="Expense Tracker"
+               Style="{StaticResource LargeTitle}"
+               HorizontalOptions="Center" />
+        <ActivityIndicator IsRunning="True"
+                           Color="{StaticResource Primary}"
+                           HeightRequest="50"
+                           WidthRequest="50" />
+    </VerticalStackLayout>
+</ContentPage>

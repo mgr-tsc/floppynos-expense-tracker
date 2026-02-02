@@ -1,0 +1,19 @@
+{
+    "Profiles": [
+        { "Name": "Alex" },
+        { "Name": "Jordan" }
+    ],
+    "Cards": [
+        { "Provider": "Visa", "Alias": "Alex Checking", "LastFourDigits": "4521", "ProfileIndex": 0 },
+        { "Provider": "Mastercard", "Alias": "Jordan Credit", "LastFourDigits": "8832", "ProfileIndex": 1 },
+        { "Provider": "Amex", "Alias": "Alex Rewards", "LastFourDigits": "1199", "ProfileIndex": 0 }
+    ],
+    "Expenses": [
+        { "Description": "Groceries at Whole Foods", "Amount": 87.50, "SplitPolicy": "50/50", "CardIndex": 0, "DaysAgo": 0 },
+        { "Description": "Electric bill", "Amount": 124.00, "SplitPolicy": "50/50", "CardIndex": 1, "DaysAgo": 2 },
+        { "Description": "Dinner at Olive Garden", "Amount": 65.30, "SplitPolicy": "50/50", "CardIndex": 0, "DaysAgo": 3 },
+        { "Description": "Jordan's gym membership", "Amount": 45.00, "SplitPolicy": "100/0", "CardIndex": 1, "DaysAgo": 5 },
+        { "Description": "Netflix subscription", "Amount": 15.99, "SplitPolicy": "50/50", "CardIndex": 2, "DaysAgo": 7 },
+        { "Description": "Gas station", "Amount": 52.40, "SplitPolicy": "70/30", "CardIndex": 0, "DaysAgo": 8 }
+    ]
+}

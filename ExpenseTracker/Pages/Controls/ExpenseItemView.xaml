@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Border
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:effectsView="clr-namespace:Syncfusion.Maui.Toolkit.EffectsView;assembly=Syncfusion.Maui.Toolkit"
+    xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
+    xmlns:models="clr-namespace:ExpenseTracker.Models"
+    x:Class="ExpenseTracker.Pages.Controls.ExpenseItemView"
+    StrokeShape="RoundRectangle 20"
+    Background="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}"
+    x:DataType="models:Expense">
+
+    <effectsView:SfEffectsView
+        TouchDownEffects="Highlight"
+        HighlightBackground="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}">
+        <Grid ColumnDefinitions="*,Auto" Padding="{OnIdiom 15, Desktop=20}"
+              SemanticProperties.Description="{Binding Description}">
+            <Grid.GestureRecognizers>
+                <TapGestureRecognizer
+                    Command="{Binding NavigateToExpenseCommand, Source={RelativeSource AncestorType={x:Type pageModels:MainPageModel}}, x:DataType=pageModels:MainPageModel}"
+                    CommandParameter="{Binding .}" />
+            </Grid.GestureRecognizers>
+
+            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                <Label Text="{Binding Description}"
+                       Style="{StaticResource Body1Strong}"
+                       LineBreakMode="TailTruncation" />
+                <HorizontalStackLayout Spacing="8">
+                    <Label Text="{Binding DisplayDate}"
+                           Style="{StaticResource Caption1}" />
+                    <Label Text="{Binding SplitPolicy, StringFormat='({0})'}"
+                           Style="{StaticResource Caption1}" />
+                </HorizontalStackLayout>
+                <Label Text="{Binding Payer.Name, StringFormat='Paid by {0}'}"
+                       Style="{StaticResource Caption2}" />
+            </VerticalStackLayout>
+
+            <Label Grid.Column="1"
+                   Text="{Binding DisplayAmount}"
+                   Style="{StaticResource Body1Strong}"
+                   VerticalOptions="Center" />
+        </Grid>
+    </effectsView:SfEffectsView>
+</Border>
