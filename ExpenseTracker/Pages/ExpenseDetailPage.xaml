@@ -6,7 +6,7 @@
              xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
              x:Class="ExpenseTracker.Pages.ExpenseDetailPage"
              x:DataType="pageModels:ExpenseDetailPageModel"
-             Title="Expense">
+             Title="Charge">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem
@@ -15,7 +15,7 @@
             Order="Primary"
             Priority="0"
             IconImageSource="{StaticResource IconDelete}"
-            SemanticProperties.Description="Delete Expense" />
+            SemanticProperties.Description="Delete Charge" />
     </ContentPage.ToolbarItems>
 
     <ScrollView>
@@ -32,7 +32,7 @@
 
             <sf:SfTextInputLayout Hint="Date">
                 <DatePicker Date="{Binding Date}"
-                            SemanticProperties.Description="Expense date" />
+                            SemanticProperties.Description="Charge date" />
             </sf:SfTextInputLayout>
 
             <sf:SfTextInputLayout Hint="Card">

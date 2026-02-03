@@ -8,7 +8,7 @@
     x:Class="ExpenseTracker.Pages.Controls.ExpenseItemView"
     StrokeShape="RoundRectangle 20"
     Background="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}"
-    x:DataType="models:Expense">
+    x:DataType="models:Charge">
 
     <effectsView:SfEffectsView
         TouchDownEffects="Highlight"

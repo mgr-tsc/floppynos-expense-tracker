@@ -4,12 +4,14 @@ namespace ExpenseTracker.Models;
 
 public class Card
 {
-    public int ID { get; set; }
+    public int Id { get; set; }
+    [JsonPropertyName("supabase_id")]
+    public long? SupabaseId { get; set; }
     public string Provider { get; set; } = string.Empty;
     public string Alias { get; set; } = string.Empty;
     public string LastFourDigits { get; set; } = string.Empty;
 
-    [JsonIgnore] public int ProfileID { get; set; }
+    [JsonIgnore] public int ProfileId { get; set; }
 
     public Profile? Profile { get; set; }
 

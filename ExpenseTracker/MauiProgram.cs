@@ -1,6 +1,9 @@
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Toolkit.Hosting;
+using ExpenseTracker.Services;
+using Supabase;
+using ExpenseTracker.Services.Interfaces;
 
 namespace ExpenseTracker;
 
@@ -30,16 +33,32 @@ public static class MauiProgram
                 fonts.AddFont("FluentSystemIcons-Regular.ttf", FluentUI.FontFamily);
             });
 
+        // Enable console logging (so you can see logs in the terminal) and set minimum level to Debug for the POC.
+        builder.Logging.AddConsole();
+        builder.Logging.SetMinimumLevel(LogLevel.Debug);
+
 #if DEBUG
         builder.Logging.AddDebug();
         builder.Services.AddLogging(configure => configure.AddDebug());
 #endif
-
-        builder.Services.AddSingleton<ProfileRepository>();
-        builder.Services.AddSingleton<CardRepository>();
-        builder.Services.AddSingleton<ExpenseRepository>();
-        builder.Services.AddSingleton<SeedDataService>();
+        
         builder.Services.AddSingleton<ModalErrorHandler>();
+        // Register third-party sign-in implementation
+        builder.Services.AddSingleton<ISigInInThirdParty, GoogleSignIn>();
+        try
+        {
+            Task.Run(AppSettings.InitializeAsync).GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Failed to initialize AppSettings: {ex.Message}");
+        }
+
+        // If Supabase is configured add the service for downstream use
+        if (AppSettings.IsSupabaseConfigured)
+        {
+            builder.Services.AddSingleton<SupabaseService>();
+        }
 
         builder.Services.AddSingleton<LoadingPageModel>();
         builder.Services.AddSingleton<LoadingPage>();

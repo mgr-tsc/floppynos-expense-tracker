@@ -1,14 +1,11 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ExpenseTracker.Models;
 
 namespace ExpenseTracker.PageModels;
 
 public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributable
 {
-    private Expense? _expense;
-    private readonly ExpenseRepository _expenseRepository;
-    private readonly CardRepository _cardRepository;
+    private Charge? _expense;
     private readonly ModalErrorHandler _errorHandler;
 
     [ObservableProperty] private string _description = string.Empty;
@@ -22,11 +19,7 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
     [ObservableProperty] private Card? _selectedCard;
 
     [ObservableProperty] private int _cardIndex = -1;
-
-    [ObservableProperty] private List<SplitOption> _splitOptions = SplitOption.Presets;
-
-    [ObservableProperty] private SplitOption? _selectedSplitOption;
-
+    
     [ObservableProperty] private int _splitOptionIndex;
 
     [ObservableProperty] bool _isBusy;
@@ -43,13 +36,9 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
         }
     }
 
-    public ExpenseDetailPageModel(ExpenseRepository expenseRepository, CardRepository cardRepository,
-        ModalErrorHandler errorHandler)
+    public ExpenseDetailPageModel(ModalErrorHandler errorHandler)
     {
-        _expenseRepository = expenseRepository;
-        _cardRepository = cardRepository;
         _errorHandler = errorHandler;
-        _selectedSplitOption = _splitOptions[0];
     }
 
     public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -61,38 +50,27 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
         }
         else
         {
-            LoadCards().FireAndForgetSafeAsync(_errorHandler);
             _expense = new();
         }
     }
-
-    private async Task LoadCards() =>
-        Cards = await _cardRepository.ListAsync();
+    
 
     private async Task LoadData(int id)
     {
         try
         {
             IsBusy = true;
-
-            _expense = await _expenseRepository.GetAsync(id);
-
             if (_expense.IsNullOrNew())
             {
-                _errorHandler.HandleError(new Exception($"Expense with id {id} could not be found."));
+                _errorHandler.HandleError(new Exception($"Charge with id {id} could not be found."));
                 return;
             }
 
             Description = _expense.Description;
             Amount = _expense.Amount;
             Date = _expense.Date;
-
-            Cards = await _cardRepository.ListAsync();
-            SelectedCard = Cards.FirstOrDefault(c => c.ID == _expense.CardID);
-            CardIndex = Cards.FindIndex(c => c.ID == _expense.CardID);
-
-            SelectedSplitOption = SplitOptions.FirstOrDefault(s => s.Label == _expense.SplitPolicy);
-            SplitOptionIndex = SplitOptions.FindIndex(s => s.Label == _expense.SplitPolicy);
+            SelectedCard = Cards.FirstOrDefault(c => c.Id == _expense.CardId);
+            CardIndex = Cards.FindIndex(c => c.Id == _expense.CardId);
         }
         catch (Exception e)
         {
@@ -110,20 +88,18 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
     {
         if (_expense is null)
         {
-            _errorHandler.HandleError(new Exception("Expense is null. Cannot Save."));
+            _errorHandler.HandleError(new Exception("Charge is null. Cannot Save."));
             return;
         }
 
         _expense.Description = Description;
         _expense.Amount = Amount;
         _expense.Date = Date;
-        _expense.SplitPolicy = SelectedSplitOption?.Label ?? "50/50";
-        _expense.CardID = SelectedCard?.ID ?? 0;
-        _expense.PayerProfileID = SelectedCard?.ProfileID ?? 0;
-        await _expenseRepository.SaveItemAsync(_expense);
+        _expense.CardId = SelectedCard?.Id ?? 0;
+        _expense.PayerProfileId = SelectedCard?.ProfileId ?? 0;
 
         await Shell.Current.GoToAsync("..");
-        await AppShell.DisplayToastAsync("Expense saved");
+        await AppShell.DisplayToastAsync("Charge saved");
     }
 
     [RelayCommand(CanExecute = nameof(CanDelete))]
@@ -134,9 +110,7 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
             await Shell.Current.GoToAsync("..");
             return;
         }
-
-        await _expenseRepository.DeleteItemAsync(_expense);
         await Shell.Current.GoToAsync("..");
-        await AppShell.DisplayToastAsync("Expense deleted");
+        await AppShell.DisplayToastAsync("Charge deleted");
     }
 }

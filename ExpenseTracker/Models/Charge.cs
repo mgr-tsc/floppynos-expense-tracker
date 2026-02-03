@@ -2,16 +2,18 @@ using System.Text.Json.Serialization;
 
 namespace ExpenseTracker.Models;
 
-public class Expense
+public class Charge
 {
-    public int ID { get; set; }
+    public int Id { get; set; }
     public DateTime Date { get; set; } = DateTime.Today;
     public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }
     public string SplitPolicy { get; set; } = "50/50";
-
-    [JsonIgnore] public int CardID { get; set; }
-    [JsonIgnore] public int PayerProfileID { get; set; }
+    
+    [JsonIgnore] 
+    public int CardId { get; set; }
+    [JsonIgnore] 
+    public int PayerProfileId { get; set; }
 
     public Card? Card { get; set; }
     public Profile? Payer { get; set; }

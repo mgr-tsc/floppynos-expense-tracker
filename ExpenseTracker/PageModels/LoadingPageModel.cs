@@ -8,7 +8,7 @@ public partial class LoadingPageModel : ObservableObject
     [RelayCommand]
     private async Task Appearing()
     {
-        await Task.Delay(1500);
+        await AppSettings.InitializeAsync();
         await Shell.Current.GoToAsync("//signin");
     }
 }

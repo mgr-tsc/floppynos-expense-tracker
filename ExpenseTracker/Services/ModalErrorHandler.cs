@@ -1,5 +1,3 @@
-using Microsoft.Maui.Controls;
-
 namespace ExpenseTracker.Services;
 
 /// <summary>
