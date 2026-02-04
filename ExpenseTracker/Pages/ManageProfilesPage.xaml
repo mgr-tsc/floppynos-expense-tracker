@@ -27,21 +27,21 @@
 
             <VerticalStackLayout Spacing="{StaticResource LayoutSpacing}"
                 BindableLayout.ItemsSource="{Binding Profiles}">
-                <BindableLayout.ItemTemplate>
-                    <DataTemplate x:DataType="models:Profile">
-                        <Border>
-                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15" Padding="5">
-                                <Label Text="Name"
-                                       Grid.Column="0"
-                                       VerticalOptions="Center"
-                                       Style="{StaticResource Body1Strong}" />
-                                <Entry Text="{Binding Name}"
-                                       Grid.Column="1"
-                                       SemanticProperties.Description="{Binding Name, StringFormat='{0} profile name'}" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </BindableLayout.ItemTemplate>
+                <!-- <BindableLayout.ItemTemplate> -->
+                <!--     <DataTemplate x:DataType="models:Profile"> -->
+                <!--         <Border> -->
+                <!--             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15" Padding="5"> -->
+                <!--                 <Label Text="Name" -->
+                <!--                        Grid.Column="0" -->
+                <!--                        VerticalOptions="Center" -->
+                <!--                        Style="{StaticResource Body1Strong}" /> -->
+                <!--                 <Entry Text="{Binding Name}" -->
+                <!--                        Grid.Column="1" -->
+                <!--                        SemanticProperties.Description="{Binding Name, StringFormat='{0} profile name'}" /> -->
+                <!--             </Grid> -->
+                <!--         </Border> -->
+                <!--     </DataTemplate> -->
+                <!-- </BindableLayout.ItemTemplate> -->
             </VerticalStackLayout>
 
             <Button Text="Save Profiles"

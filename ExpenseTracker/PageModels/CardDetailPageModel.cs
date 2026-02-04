@@ -1,11 +1,12 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ExpenseTracker.Models.Supabase;
 
 namespace ExpenseTracker.PageModels;
 
 public partial class CardDetailPageModel : ObservableObject, IQueryAttributable
 {
-    private Card? _card;
+    private CardDTO? _card;
     private readonly ModalErrorHandler _errorHandler;
 
     [ObservableProperty] private string _provider = string.Empty;
@@ -14,9 +15,9 @@ public partial class CardDetailPageModel : ObservableObject, IQueryAttributable
 
     [ObservableProperty] private string _lastFourDigits = string.Empty;
 
-    [ObservableProperty] private List<Profile> _profiles = [];
-
-    [ObservableProperty] private Profile? _selectedProfile;
+    // [ObservableProperty] private List<Profile> _profiles = [];
+    //
+    // [ObservableProperty] private Profile? _selectedProfile;
 
     [ObservableProperty] private int _profileIndex = -1;
 

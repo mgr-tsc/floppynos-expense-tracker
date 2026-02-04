@@ -1,8 +1,5 @@
 using System.Text.Json;
 using ExpenseTracker.Services.Interfaces;
-using ExpenseTracker.Data;
-using Microsoft.Maui.Authentication;
-using Microsoft.Maui.Storage;
 
 namespace ExpenseTracker.Services;
 
@@ -110,7 +107,6 @@ public class GoogleSignIn: ISigInInThirdParty
                 Email = root.TryGetProperty("email", out var email) ? email.GetString() : null,
                 Name = root.TryGetProperty("name", out var name) ? name.GetString() : null,
             };
-
             return user;
         }
         catch

@@ -18,6 +18,10 @@ public static class AppSettings
     /// </summary>
     public  static string SupabaseKey { get; private set; } = string.Empty;
     /// <summary>
+    /// 
+    /// </summary>
+    public static string SupabaseAnonKey { get; private set; } = string.Empty;
+    /// <summary>
     ///
     /// </summary>
     public static bool IsSupabaseConfigured => !string.IsNullOrWhiteSpace(SupabaseUrl) && !string.IsNullOrWhiteSpace(SupabaseKey);
@@ -95,6 +99,9 @@ public static class AppSettings
                         break;
                     case "SUPABASE_KEY":
                         SupabaseKey = value;
+                        break;
+                    case "SUPABASE_ANON_KEY":
+                        SupabaseAnonKey = value;
                         break;
                 }
             }

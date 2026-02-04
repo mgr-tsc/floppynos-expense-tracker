@@ -7,7 +7,7 @@ namespace ExpenseTracker.PageModels;
 public partial class ManageProfilesPageModel : ObservableObject
 {
 
-    [ObservableProperty] private ObservableCollection<Profile> _profiles = [];
+    //[ObservableProperty] private ObservableCollection<S> _profiles = [];
 
     public ManageProfilesPageModel()
     {
@@ -26,10 +26,10 @@ public partial class ManageProfilesPageModel : ObservableObject
     [RelayCommand]
     private async Task SaveProfiles()
     {
-        foreach (var profile in Profiles)
-        {
-            // await _profileRepository.SaveItemAsync(profile);
-        }
+        // foreach (var profile in Profiles)
+        // {
+        //     await _profileRepository.SaveItemAsync(profile);
+        // }
 
         await AppShell.DisplayToastAsync("Profiles saved");
         SemanticScreenReader.Announce("Profiles saved");

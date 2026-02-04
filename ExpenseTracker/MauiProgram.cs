@@ -1,4 +1,6 @@
 using CommunityToolkit.Maui;
+using ExpenseTracker.Data.Repositories;
+using ExpenseTracker.Resources.Fonts;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Toolkit.Hosting;
 using ExpenseTracker.Services;
@@ -54,11 +56,12 @@ public static class MauiProgram
             System.Diagnostics.Debug.WriteLine($"Failed to initialize AppSettings: {ex.Message}");
         }
 
-        // If Supabase is configured add the service for downstream use
-        if (AppSettings.IsSupabaseConfigured)
-        {
-            builder.Services.AddSingleton<SupabaseService>();
-        }
+        builder.Services.AddSingleton<SupabaseService>();
+        builder.Services.AddSingleton<CardRepository>();
+        builder.Services.AddSingleton<ChargeRepository>();
+        builder.Services.AddSingleton<PolicyRepository>();
+        builder.Services.AddSingleton<ChargeCategoryRepository>();
+        builder.Services.AddSingleton<HouseholdRepository>();
 
         builder.Services.AddSingleton<LoadingPageModel>();
         builder.Services.AddSingleton<LoadingPage>();

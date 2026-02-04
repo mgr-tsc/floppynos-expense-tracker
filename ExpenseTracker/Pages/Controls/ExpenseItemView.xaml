@@ -4,11 +4,11 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Toolkit.EffectsView;assembly=Syncfusion.Maui.Toolkit"
     xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
-    xmlns:models="clr-namespace:ExpenseTracker.Models"
+    xmlns:models="clr-namespace:ExpenseTracker.Models.Supabase"
     x:Class="ExpenseTracker.Pages.Controls.ExpenseItemView"
     StrokeShape="RoundRectangle 20"
     Background="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}"
-    x:DataType="models:Charge">
+    x:DataType="models:ChargeDTO">
 
     <effectsView:SfEffectsView
         TouchDownEffects="Highlight"

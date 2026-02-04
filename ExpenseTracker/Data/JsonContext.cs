@@ -1,13 +1,13 @@
 using System.Text.Json.Serialization;
+using ExpenseTracker.Models.Supabase;
 
-[JsonSerializable(typeof(Profile))]
-[JsonSerializable(typeof(Card))]
-[JsonSerializable(typeof(Charge))]
-[JsonSerializable(typeof(CardRecordDto))]
-[JsonSerializable(typeof(ChargeDto))]
-[JsonSerializable(typeof(ChargeCatDto))]
-[JsonSerializable(typeof(HouseholdDto))]
-[JsonSerializable(typeof(PolicyDto))]
+namespace ExpenseTracker.Data;
+
+[JsonSerializable(typeof(CardDTO))]
+[JsonSerializable(typeof(ChargeDTO))]
+[JsonSerializable(typeof(ChargeCategoryDTO))]
+[JsonSerializable(typeof(HouseHoldDTO))]
+[JsonSerializable(typeof(PolicyDTO))]
 public partial class JsonContext : JsonSerializerContext
 {
     

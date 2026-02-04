@@ -1,11 +1,11 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-
+using ExpenseTracker.Models.Supabase;
 namespace ExpenseTracker.PageModels;
 
 public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributable
 {
-    private Charge? _expense;
+    private ChargeDTO? _expense;
     private readonly ModalErrorHandler _errorHandler;
 
     [ObservableProperty] private string _description = string.Empty;
@@ -14,9 +14,9 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
 
     [ObservableProperty] private DateTime _date = DateTime.Today;
 
-    [ObservableProperty] private List<Card> _cards = [];
+    [ObservableProperty] private List<CardDTO> _cards = [];
 
-    [ObservableProperty] private Card? _selectedCard;
+    [ObservableProperty] private CardDTO? _selectedCard;
 
     [ObservableProperty] private int _cardIndex = -1;
     
@@ -60,17 +60,17 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
         try
         {
             IsBusy = true;
-            if (_expense.IsNullOrNew())
-            {
-                _errorHandler.HandleError(new Exception($"Charge with id {id} could not be found."));
-                return;
-            }
+            // if (_expense.IsNullOrNew())
+            // {
+            //     _errorHandler.HandleError(new Exception($"Charge with id {id} could not be found."));
+            //     return;
+            // }
 
             Description = _expense.Description;
             Amount = _expense.Amount;
-            Date = _expense.Date;
-            SelectedCard = Cards.FirstOrDefault(c => c.Id == _expense.CardId);
-            CardIndex = Cards.FindIndex(c => c.Id == _expense.CardId);
+            //Date = _expense.Date;
+            SelectedCard = Cards.FirstOrDefault(c => c.Id == _expense.CardIdFk);
+            CardIndex = Cards.FindIndex(c => c.Id == _expense.CardIdFk);
         }
         catch (Exception e)
         {
@@ -79,7 +79,7 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
         finally
         {
             IsBusy = false;
-            CanDelete = !_expense.IsNullOrNew();
+            //CanDelete = !_expense.IsNullOrNew();
         }
     }
 
@@ -94,9 +94,9 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
 
         _expense.Description = Description;
         _expense.Amount = Amount;
-        _expense.Date = Date;
-        _expense.CardId = SelectedCard?.Id ?? 0;
-        _expense.PayerProfileId = SelectedCard?.ProfileId ?? 0;
+        // _expense.Date = Date;
+        // _expense.CardId = SelectedCard?.Id ?? 0;
+        // _expense.PayerProfileId = SelectedCard?.ProfileId ?? 0;
 
         await Shell.Current.GoToAsync("..");
         await AppShell.DisplayToastAsync("Charge saved");
@@ -105,11 +105,11 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
     [RelayCommand(CanExecute = nameof(CanDelete))]
     private async Task Delete()
     {
-        if (_expense.IsNullOrNew())
-        {
-            await Shell.Current.GoToAsync("..");
-            return;
-        }
+        // if (_expense.IsNullOrNew())
+        // {
+        //     await Shell.Current.GoToAsync("..");
+        //     return;
+        // }
         await Shell.Current.GoToAsync("..");
         await AppShell.DisplayToastAsync("Charge deleted");
     }

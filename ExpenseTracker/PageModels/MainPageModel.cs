@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ExpenseTracker.Models.Supabase;
 using Microsoft.Extensions.Logging;
 
 namespace ExpenseTracker.PageModels;
@@ -12,7 +13,7 @@ public partial class MainPageModel : ObservableObject
     private readonly ILogger<MainPageModel> _logger;
     
 
-    [ObservableProperty] private List<Charge> _expenses = [];
+    [ObservableProperty] private List<ChargeDTO> _expenses = [];
 
     [ObservableProperty] private BalanceData _balance = new();
 
@@ -45,6 +46,6 @@ public partial class MainPageModel : ObservableObject
         => Shell.Current.GoToAsync("expense");
 
     [RelayCommand]
-    private Task NavigateToExpense(Charge charge)
+    private Task NavigateToExpense(ChargeDTO charge)
         => Shell.Current.GoToAsync($"charge?id={charge.Id}");
 }

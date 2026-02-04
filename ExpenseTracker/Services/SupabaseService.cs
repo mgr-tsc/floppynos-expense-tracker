@@ -31,4 +31,23 @@ public class SupabaseService
             Debug.WriteLine("SupabaseService created but AppSettings reports Supabase not configured.");
         }
     }
+
+    public async Task InitializeAsync()
+    {
+        if (Client is null)
+        {
+            Debug.WriteLine("SupabaseService.InitializeAsync: no client configured, skipping.");
+            return;
+        }
+
+        try
+        {
+            await Client.InitializeAsync();
+            Debug.WriteLine("SupabaseService.InitializeAsync: client connection established.");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"SupabaseService.InitializeAsync failed: {ex.Message}");
+        }
+    }
 }
