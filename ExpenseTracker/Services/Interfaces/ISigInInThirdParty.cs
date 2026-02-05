@@ -31,4 +31,10 @@ public interface ISigInInThirdParty
     /// Returns the currently authenticated user's basic info, or null if not signed in.
     /// </summary>
     Task<ThirdPartyUserInfo?> GetCurrentUserAsync();
+
+    /// <summary>
+    /// Attempts to restore a previous session from stored tokens.
+    /// Returns true if the session was successfully restored.
+    /// </summary>
+    Task<bool> TryRestoreSessionAsync();
 }

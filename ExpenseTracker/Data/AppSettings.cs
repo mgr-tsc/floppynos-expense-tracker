@@ -9,22 +9,32 @@ public static class AppSettings
     ///
     /// </summary>
     public static Settings Settings { get; private set; } = new Settings();
+    
     /// <summary>
     ///
     /// </summary>
     public static string SupabaseUrl { get; private set; } = string.Empty;
+    
     /// <summary>
     ///
     /// </summary>
     public  static string SupabaseKey { get; private set; } = string.Empty;
+    
     /// <summary>
     /// 
     /// </summary>
     public static string SupabaseAnonKey { get; private set; } = string.Empty;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public static string GoogleWebClientId { get; private set; } = "390961512533-nepig26odttd5dgj6dvmntkvjru0k3g7.apps.googleusercontent.com";
+    
     /// <summary>
     ///
     /// </summary>
     public static bool IsSupabaseConfigured => !string.IsNullOrWhiteSpace(SupabaseUrl) && !string.IsNullOrWhiteSpace(SupabaseKey);
+    
     /// <summary>
     ///
     /// </summary>
@@ -33,6 +43,7 @@ public static class AppSettings
         await LoadAppSettingsAsync();
         await LoadSupabaseEnvAsync();
     }
+    
     /// <summary>
     ///
     /// </summary>
@@ -49,6 +60,7 @@ public static class AppSettings
             AutoConnectRealtime = true,
         };
     }
+    
     /// <summary>
     ///
     /// </summary>
@@ -68,6 +80,7 @@ public static class AppSettings
             Debug.WriteLine("appsettings.json not found, using compile-time defaults.");
         }
     }
+    
     /// <summary>
     ///
     /// </summary>

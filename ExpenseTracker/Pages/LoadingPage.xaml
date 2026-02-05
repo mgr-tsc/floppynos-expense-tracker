@@ -18,7 +18,7 @@
     </ContentPage.Behaviors>
 
     <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
-        <Label Text="Charge Tracker"
+        <Label Text="Floppyno's expense Tracker"
                Style="{StaticResource LargeTitle}"
                HorizontalOptions="Center" />
         <ActivityIndicator IsRunning="True"

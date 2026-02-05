@@ -62,6 +62,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<PolicyRepository>();
         builder.Services.AddSingleton<ChargeCategoryRepository>();
         builder.Services.AddSingleton<HouseholdRepository>();
+        builder.Services.AddSingleton<PaymentRepository>();
 
         builder.Services.AddSingleton<LoadingPageModel>();
         builder.Services.AddSingleton<LoadingPage>();

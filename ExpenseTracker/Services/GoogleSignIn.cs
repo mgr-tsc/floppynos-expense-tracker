@@ -1,5 +1,9 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Security.Authentication;
 using System.Text.Json;
 using ExpenseTracker.Services.Interfaces;
+using Supabase.Gotrue;
 
 namespace ExpenseTracker.Services;
 
@@ -8,6 +12,14 @@ public class GoogleSignIn: ISigInInThirdParty
     private const string AccessTokenKey = "thirdparty_access_token";
     private const string RefreshTokenKey = "thirdparty_refresh_token";
     private const string IdTokenKey = "thirdparty_id_token";
+    
+    [SuppressMessage("ReSharper", "InconsistentNaming")] 
+    private SupabaseService _supabaseService { get; }
+    
+    public GoogleSignIn(SupabaseService supabaseService)
+    {
+        _supabaseService = supabaseService;
+    }
 
     public async Task<ThirdPartyAuthResult?> SignInWithGoogleAsync()
     {
@@ -38,47 +50,51 @@ public class GoogleSignIn: ISigInInThirdParty
         authResult.Properties.TryGetValue("refresh_token", out var refreshToken);
         authResult.Properties.TryGetValue("id_token", out var idToken);
 
-        // Persist tokens in SecureStorage for session
+        // Persist tokens for session
         if (!string.IsNullOrEmpty(accessToken))
-            await SecureStorage.SetAsync(AccessTokenKey, accessToken);
+            await TokenStorage.SetAsync(AccessTokenKey, accessToken);
         if (!string.IsNullOrEmpty(refreshToken))
-            await SecureStorage.SetAsync(RefreshTokenKey, refreshToken);
+            await TokenStorage.SetAsync(RefreshTokenKey, refreshToken);
         if (!string.IsNullOrEmpty(idToken))
-            await SecureStorage.SetAsync(IdTokenKey, idToken);
-
-        return new ThirdPartyAuthResult
+            await TokenStorage.SetAsync(IdTokenKey, idToken);
+        var sessionSet = await SetSupabaseSessionAsync(accessToken, refreshToken);
+        if (sessionSet)
         {
-            AccessToken = accessToken,
-            RefreshToken = refreshToken,
-            IdToken = idToken,
-            Properties = authResult.Properties
-        };
+            return new ThirdPartyAuthResult
+            {
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
+                IdToken = idToken,
+                Properties = authResult.Properties
+            };
+        }
+        throw new AuthenticationException("Failed to set Supabase session with obtained tokens.");
     }
 
     public async Task SignOutAsync()
     {
-        // Clear tokens from SecureStorage
+        // Sign out from Supabase server-side
         try
         {
-            SecureStorage.Remove(AccessTokenKey);
-            SecureStorage.Remove(RefreshTokenKey);
-            SecureStorage.Remove(IdTokenKey);
+            if (_supabaseService.Client != null)
+                await _supabaseService.Client.Auth.SignOut();
         }
         catch
         {
-            // ignore
+            // Best-effort server sign-out; continue clearing local state
         }
 
-        // Optionally call Supabase sign-out endpoint if needed
-        // For POC we just clear local tokens
-        await Task.CompletedTask;
+        // Clear tokens from storage
+        TokenStorage.Remove(AccessTokenKey);
+        TokenStorage.Remove(RefreshTokenKey);
+        TokenStorage.Remove(IdTokenKey);
     }
 
     public async Task<ThirdPartyUserInfo?> GetCurrentUserAsync()
     {
         try
         {
-            var idToken = await SecureStorage.GetAsync(IdTokenKey);
+            var idToken = await TokenStorage.GetAsync(IdTokenKey);
             if (string.IsNullOrEmpty(idToken))
                 return null;
 
@@ -112,6 +128,38 @@ public class GoogleSignIn: ISigInInThirdParty
         catch
         {
             return null;
+        }
+    }
+
+    public async Task<bool> TryRestoreSessionAsync()
+    {
+        try
+        {
+            var accessToken = await TokenStorage.GetAsync(AccessTokenKey);
+            var refreshToken = await TokenStorage.GetAsync(RefreshTokenKey);
+
+            if (string.IsNullOrEmpty(accessToken) || string.IsNullOrEmpty(refreshToken))
+                return false;
+
+            return await SetSupabaseSessionAsync(accessToken, refreshToken);
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private async Task<bool> SetSupabaseSessionAsync(string accessToken, string refreshToken)
+    {
+        Debug.Assert(_supabaseService.Client != null, "_supabaseService.Client != null");
+        try
+        {
+            await _supabaseService.Client.Auth.SetSession(accessToken, refreshToken);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
         }
     }
 }
