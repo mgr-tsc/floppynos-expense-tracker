@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ExpenseTracker.Pages.Controls.HeaderBar">
+
+    <Grid x:Name="HeaderBarLayout"
+          ColumnDefinitions="*,Auto,*"
+          Padding="16,8"
+          VerticalOptions="Center">
+
+        <Label Grid.Column="1"
+               Text="{Binding UserName}"
+               FontSize="18"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               VerticalOptions="Center" />
+
+        <Border Grid.Column="2"
+                WidthRequest="36"
+                HeightRequest="36"
+                HorizontalOptions="End"
+                VerticalOptions="Center"
+                StrokeThickness="0"
+                BackgroundColor="{AppThemeBinding Light=#E6E6E6, Dark=#2E2E2E}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="18" />
+            </Border.StrokeShape>
+            <Image Source="user_profile.png"
+                   Aspect="AspectFill" />
+        </Border>
+    </Grid>
+
+</ContentView>

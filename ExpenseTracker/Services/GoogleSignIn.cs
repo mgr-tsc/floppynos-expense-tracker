@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Security.Authentication;
 using System.Text.Json;
 using ExpenseTracker.Services.Interfaces;
+using Microsoft.Extensions.Logging;
 using Supabase.Gotrue;
 
 namespace ExpenseTracker.Services;
@@ -12,13 +13,15 @@ public class GoogleSignIn: ISigInInThirdParty
     private const string AccessTokenKey = "thirdparty_access_token";
     private const string RefreshTokenKey = "thirdparty_refresh_token";
     private const string IdTokenKey = "thirdparty_id_token";
+    private ILogger<GoogleSignIn> _logger;
     
     [SuppressMessage("ReSharper", "InconsistentNaming")] 
     private SupabaseService _supabaseService { get; }
     
-    public GoogleSignIn(SupabaseService supabaseService)
+    public GoogleSignIn(SupabaseService supabaseService, ILogger<GoogleSignIn> logger)
     {
         _supabaseService = supabaseService;
+        _logger = logger;
     }
 
     public async Task<ThirdPartyAuthResult?> SignInWithGoogleAsync()
@@ -90,45 +93,24 @@ public class GoogleSignIn: ISigInInThirdParty
         TokenStorage.Remove(IdTokenKey);
     }
 
-    public async Task<ThirdPartyUserInfo?> GetCurrentUserAsync()
+    public ThirdPartyUserInfo? GetCurrentUserAsync()
     {
-        try
+        var currentUser = _supabaseService.Client?.Auth.CurrentUser;
+        var name = string.Empty;
+        if (currentUser is null)
         {
-            var idToken = await TokenStorage.GetAsync(IdTokenKey);
-            if (string.IsNullOrEmpty(idToken))
-                return null;
-
-            // ID token is a JWT - decode the payload to get user info
-            var parts = idToken.Split('.');
-            if (parts.Length < 2)
-                return null;
-
-            string payload = parts[1];
-            // Pad base64
-            payload = payload.Replace('-', '+').Replace('_', '/');
-            switch (payload.Length % 4)
-            {
-                case 2: payload += "=="; break;
-                case 3: payload += "="; break;
-            }
-
-            var bytes = Convert.FromBase64String(payload);
-            var json = System.Text.Encoding.UTF8.GetString(bytes);
-            var doc = JsonDocument.Parse(json);
-            var root = doc.RootElement;
-
-            var user = new ThirdPartyUserInfo
-            {
-                Id = root.TryGetProperty("sub", out var sub) ? sub.GetString() : null,
-                Email = root.TryGetProperty("email", out var email) ? email.GetString() : null,
-                Name = root.TryGetProperty("name", out var name) ? name.GetString() : null,
-            };
-            return user;
+            throw new AuthenticationException("No current user");
         }
-        catch
+        if (currentUser.UserMetadata.TryGetValue("name", out var userName))
         {
-            return null;
+            name = Convert.ToString(userName) ?? string.Empty;
         }
+        return new ThirdPartyUserInfo
+        {
+            Id = currentUser.Id,
+            Email = currentUser.Email,
+            Name = name
+        };
     }
 
     public async Task<bool> TryRestoreSessionAsync()
@@ -157,8 +139,9 @@ public class GoogleSignIn: ISigInInThirdParty
             await _supabaseService.Client.Auth.SetSession(accessToken, refreshToken);
             return true;
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            _logger.LogError("Failed to set Supabase session with obtained tokens.");
             return false;
         }
     }

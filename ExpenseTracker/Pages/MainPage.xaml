@@ -31,43 +31,42 @@
             <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
+    <StackLayout x:Name="MainLayout">
+        <Grid>
+            <pullToRefresh:SfPullToRefresh
+                IsRefreshing="{Binding IsRefreshing}"
+                RefreshCommand="{Binding RefreshCommand}">
+                <pullToRefresh:SfPullToRefresh.PullableContent>
+                    <ScrollView>
+                        <Grid Padding="{StaticResource LayoutPadding}" 
+                              RowSpacing="{StaticResource LayoutSpacing}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <controls:HeaderBar Grid.Row="0" UserName="{Binding UserName}" ></controls:HeaderBar>
+                            <controls:BalanceView Grid.Row="1" BindingContext="{Binding Balance}" />
+                            <!-- <Label Grid.Row="1" Text="Recent Expenses" Style="{StaticResource Title2}" -->
+                            <!--        SemanticProperties.HeadingLevel="Level1" -->
+                            <!--        Margin="0,10,0,0" /> -->
+                            <VerticalStackLayout Grid.Row="2" Spacing="15"
+                                BindableLayout.ItemsSource="{Binding Expenses}">
+                                <BindableLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="models:ChargeDTO">
+                                        <controls:ExpenseItemView />
+                                    </DataTemplate>
+                                </BindableLayout.ItemTemplate>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </ScrollView>
+                </pullToRefresh:SfPullToRefresh.PullableContent>
+            </pullToRefresh:SfPullToRefresh>
 
-    <Grid>
-        <pullToRefresh:SfPullToRefresh
-            IsRefreshing="{Binding IsRefreshing}"
-            RefreshCommand="{Binding RefreshCommand}">
-            <pullToRefresh:SfPullToRefresh.PullableContent>
-                <ScrollView>
-                    <Grid Padding="{StaticResource LayoutPadding}" RowSpacing="{StaticResource LayoutSpacing}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-
-                        <controls:BalanceView Grid.Row="0"
-                            BindingContext="{Binding Balance}" />
-
-                        <Label Grid.Row="1" Text="Recent Expenses" Style="{StaticResource Title2}"
-                               SemanticProperties.HeadingLevel="Level1"
-                               Margin="0,10,0,0" />
-
-                        <VerticalStackLayout Grid.Row="2" Spacing="15"
-                            BindableLayout.ItemsSource="{Binding Expenses}">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate x:DataType="models:ChargeDTO">
-                                    <controls:ExpenseItemView />
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
-                    </Grid>
-                </ScrollView>
-            </pullToRefresh:SfPullToRefresh.PullableContent>
-        </pullToRefresh:SfPullToRefresh>
-
-        <controls:AddButton
-            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-            Command="{Binding AddExpenseCommand}"
-            SemanticProperties.Description="Add expense" />
-    </Grid>
+            <controls:AddButton
+                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                Command="{Binding AddExpenseCommand}"
+                SemanticProperties.Description="Add expense" />
+        </Grid>
+    </StackLayout>
 </ContentPage>
