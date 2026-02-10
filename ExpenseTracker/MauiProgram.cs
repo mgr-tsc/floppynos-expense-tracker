@@ -74,8 +74,12 @@ public static class MauiProgram
         builder.Services.AddSingleton<CardListPage>();
         builder.Services.AddSingleton<ManageProfilesPageModel>();
         builder.Services.AddSingleton<ManageProfilesPage>();
+        builder.Services.AddSingleton<HouseholdSetupPageModel>();
+        builder.Services.AddSingleton<HouseholdSetupPage>();
 
         builder.Services.AddTransientWithShellRoute<ExpenseDetailPage, ExpenseDetailPageModel>("expense");
+        builder.Services.AddTransientWithShellRoute<CreateHouseholdPage, CreateHouseholdPageModel>("createhousehold");
+        builder.Services.AddTransientWithShellRoute<JoinHouseholdPage, JoinHouseholdPageModel>("joinhousehold");
         builder.Services.AddTransientWithShellRoute<CardDetailPage, CardDetailPageModel>("card");
 
         return builder.Build();

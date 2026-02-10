@@ -21,6 +21,12 @@
         Shell.FlyoutItemIsVisible="False" />
 
     <ShellContent
+        Title="Household Setup"
+        ContentTemplate="{DataTemplate pages:HouseholdSetupPage}"
+        Route="householdsetup"
+        Shell.FlyoutItemIsVisible="False" />
+
+    <ShellContent
         Title="Dashboard"
         Icon="{StaticResource IconDashboard}"
         ContentTemplate="{DataTemplate pages:MainPage}"

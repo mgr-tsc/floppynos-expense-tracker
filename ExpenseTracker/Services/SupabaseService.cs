@@ -1,11 +1,27 @@
 using Supabase;
 using System.Diagnostics;
+using System.Text.Json;
+using ExpenseTracker.Models.Supabase;
+using ExpenseTracker.Services.Interfaces;
+using ExpenseTracker.Models;
 
 namespace ExpenseTracker.Services;
 
 public class SupabaseService
 {
     public Client? Client { get; private set; }
+    private JsonSerializerOptions? _jsonSerializerOptions => new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        WriteIndented = false
+    };
+
+    private ThirdPartyUserInfo GetFakeUser => new ThirdPartyUserInfo
+    {
+        Name = AppSettings.FakeUserName,
+        Email = AppSettings.FakeUserEmail,
+        Id = "fake_user_id"
+    };
 
     public SupabaseService()
     {
@@ -49,5 +65,67 @@ public class SupabaseService
         {
             Debug.WriteLine($"SupabaseService.InitializeAsync failed: {ex.Message}");
         }
+    }
+
+    /// <summary>
+    /// Gets the current authenticated user's ID
+    /// </summary>
+    public string? GetCurrentUserId() => Client?.Auth.CurrentUser?.Id;
+
+    public async Task<Tuple<string, string>> CreateHouseHoldTrackerAsync(string houseHoldName)
+    {
+        try
+        {
+            var code = new Random().Next(10000, 99999);
+            var userEmail = Client?.Auth.CurrentUser?.Email ?? string.Empty;
+            var tempRecord = CreateHouseHoldTemporaryRecord(houseHoldName, code, userEmail);
+            var userId = Client.Auth.CurrentUser!.Id;
+
+            var parameters = new Dictionary<string, object>
+            {
+                { "p_household_name", houseHoldName },
+                { "p_user_a_id", userId },
+                { "p_code", (long)code },
+                { "p_temp_key", tempRecord.Key },
+                { "p_temp_record", tempRecord.Record },
+                { "p_expire_at", tempRecord.ExpireAt.ToString("O") }
+            };
+
+            Debug.WriteLine($"Calling create_household_with_temp_record:");
+            Debug.WriteLine($"  p_household_name: {houseHoldName}");
+            Debug.WriteLine($"  p_user_a_id: {userId}");
+            Debug.WriteLine($"  p_code: {code}");
+            Debug.WriteLine($"  p_temp_key: {tempRecord.Key}");
+            Debug.WriteLine($"  p_expire_at: {tempRecord.ExpireAt:O}");
+
+            var storeProcedureCallResult = await Client!
+                .Rpc("create_household_with_temp_record", parameters);
+            return new Tuple<string, string>(storeProcedureCallResult.Content.ToString(), code.ToString());
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine($"SupabaseService.CreateHouseHoldTrackerAsync failed: {e.Message}");
+            throw;
+        }
+    }
+
+    private TemporaryRecordDTO CreateHouseHoldTemporaryRecord(string houseHoldName, int code, string userEmail)
+    {
+        var houseHoldCreationData = new HouseHoldCreationRecord
+        {
+            HouseHoldName = houseHoldName,
+            CreatedAt = DateTimeOffset.UtcNow,
+            UserCreationEmail = userEmail,
+            CodeToJoin = code.ToString(),
+            Uuid = Guid.NewGuid().ToString()
+        };
+        var tempRecord = new TemporaryRecordDTO
+        {
+            CreatedAt = DateTimeOffset.UtcNow,
+            ExpireAt = DateTimeOffset.UtcNow.AddMinutes(60),
+            Key = $"_household_creation_{houseHoldName}",
+            Record = JsonSerializer.Serialize(houseHoldCreationData, _jsonSerializerOptions)
+        };
+        return tempRecord;
     }
 }

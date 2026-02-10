@@ -1,5 +1,6 @@
 using ExpenseTracker.Models.Supabase;
 using Microsoft.Extensions.Logging;
+using Supabase.Postgrest;
 
 namespace ExpenseTracker.Data.Repositories;
 
@@ -48,5 +49,48 @@ public class HouseholdRepository
         await _supabase.Client!.From<HouseHoldDTO>()
             .Where(x => x.Id == id)
             .Delete();
+    }
+
+    /// <summary>
+    /// Check if a user belongs to any household (as user_a or user_b)
+    /// </summary>
+    public async Task<HouseHoldDTO?> GetByUserIdAsync(string userId)
+    {
+        _logger.LogInformation("[HouseholdRepository] Searching for household with userId: {UserId}", userId);
+
+        // Query user_a_id_fk = userId
+        var result = await _supabase.Client!.From<HouseHoldDTO>()
+            .Filter("user_a_id_fk", Constants.Operator.Equals, userId)
+            .Get();
+
+        _logger.LogInformation("[HouseholdRepository] Found {Count} households where user is user_a", result.Models.Count);
+
+        if (result.Models.Any())
+        {
+            var household = result.Models.First();
+            _logger.LogInformation("[HouseholdRepository] Returning household ID: {Id}", household.Id);
+            return household;
+        }
+
+        // Query user_b_id_fk = userId
+        result = await _supabase.Client!.From<HouseHoldDTO>()
+            .Filter("user_b_id_fk", Constants.Operator.Equals, userId)
+            .Get();
+
+        _logger.LogInformation("[HouseholdRepository] Found {Count} households where user is user_b", result.Models.Count);
+
+        return result.Models.FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Find a household by its join code
+    /// </summary>
+    public async Task<HouseHoldDTO?> GetByCodeAsync(long code)
+    {
+        var result = await _supabase.Client!.From<HouseHoldDTO>()
+            .Filter("code", Constants.Operator.Equals, code)
+            .Filter("enabled", Constants.Operator.Equals, true)
+            .Get();
+        return result.Models.FirstOrDefault();
     }
 }

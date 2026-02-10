@@ -124,4 +124,8 @@ public static class AppSettings
             Debug.WriteLine("supabase.env not found, Supabase integration disabled.");
         }
     }
+    
+    public static string FakeUserName => "Example";
+
+    public static string FakeUserEmail => "fake_user@example.com";
 }
