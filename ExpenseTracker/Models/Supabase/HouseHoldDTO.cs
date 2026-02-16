@@ -4,7 +4,7 @@ using Supabase.Postgrest.Models;
 namespace ExpenseTracker.Models.Supabase;
 
 [Table("HOUSEHOLD")]
-public class HouseHoldDTO: BaseModel
+public class HouseHoldDto: BaseModel
 {
     [PrimaryKey("id")]
     public long Id { get; set; }

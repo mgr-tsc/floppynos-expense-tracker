@@ -14,32 +14,32 @@ public class ChargeRepository
         _logger = logger;
     }
 
-    public async Task<List<ChargeDTO>> ListAsync()
+    public async Task<List<ChargeDto>> ListAsync()
     {
-        var result = await _supabase.Client!.From<ChargeDTO>()
+        var result = await _supabase.Client!.From<ChargeDto>()
             .Select("*, POLICY(*), CHARGE_CAT_UNUSED(*), CARD_RECORD(*)")
             .Get();
         return result.Models;
     }
 
-    public async Task<ChargeDTO?> GetAsync(long id)
+    public async Task<ChargeDto?> GetAsync(long id)
     {
-        return await _supabase.Client!.From<ChargeDTO>()
+        return await _supabase.Client!.From<ChargeDto>()
             .Select("*, POLICY(*), CHARGE_CAT_UNUSED(*), CARD_RECORD(*)")
             .Where(x => x.Id == id)
             .Single();
     }
 
-    public async Task<ChargeDTO> SaveAsync(ChargeDTO item)
+    public async Task<ChargeDto> SaveAsync(ChargeDto item)
     {
         if (item.Id == 0)
         {
-            var result = await _supabase.Client!.From<ChargeDTO>().Insert(item);
+            var result = await _supabase.Client!.From<ChargeDto>().Insert(item);
             return result.Models.First();
         }
         else
         {
-            var result = await _supabase.Client!.From<ChargeDTO>()
+            var result = await _supabase.Client!.From<ChargeDto>()
                 .Where(x => x.Id == item.Id)
                 .Update(item);
             return result.Models.First();
@@ -48,7 +48,7 @@ public class ChargeRepository
 
     public async Task DeleteAsync(long id)
     {
-        await _supabase.Client!.From<ChargeDTO>()
+        await _supabase.Client!.From<ChargeDto>()
             .Where(x => x.Id == id)
             .Delete();
     }

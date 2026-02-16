@@ -16,7 +16,7 @@ public partial class MainPageModel : ObservableObject
     
     [ObservableProperty] private string _userName = string.Empty;
     
-    [ObservableProperty] private List<ChargeDTO> _expenses = [];
+    [ObservableProperty] private List<ChargeDto> _expenses = [];
 
     [ObservableProperty] private BalanceData _balance = new();
 
@@ -50,7 +50,7 @@ public partial class MainPageModel : ObservableObject
     private Task AddExpense() => Shell.Current.GoToAsync("expense");
 
     [RelayCommand]
-    private Task NavigateToExpense(ChargeDTO charge) => Shell.Current.GoToAsync($"charge?id={charge.Id}");
+    private Task NavigateToExpense(ChargeDto charge) => Shell.Current.GoToAsync($"charge?id={charge.Id}");
 
     [RelayCommand]
     private async Task Appearing()

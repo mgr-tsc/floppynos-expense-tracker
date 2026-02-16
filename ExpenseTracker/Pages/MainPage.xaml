@@ -53,7 +53,7 @@
                             <VerticalStackLayout Grid.Row="2" Spacing="15"
                                 BindableLayout.ItemsSource="{Binding Expenses}">
                                 <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:ChargeDTO">
+                                    <DataTemplate x:DataType="models:ChargeDto">
                                         <controls:ExpenseItemView />
                                     </DataTemplate>
                                 </BindableLayout.ItemTemplate>

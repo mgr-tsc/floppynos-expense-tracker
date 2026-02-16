@@ -5,6 +5,7 @@
              xmlns:models="clr-namespace:ExpenseTracker.Models.Supabase"
              xmlns:controls="clr-namespace:ExpenseTracker.Pages.Controls"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.PullToRefresh;assembly=Syncfusion.Maui.Toolkit"
              x:Class="ExpenseTracker.Pages.CardListPage"
              x:Name="CardList"
              x:DataType="pageModels:CardListPageModel"
@@ -19,27 +20,45 @@
     </ContentPage.Behaviors>
 
     <Grid>
-        <CollectionView ItemsSource="{Binding Cards}"
-            Margin="{StaticResource LayoutPadding}"
-            SelectionMode="Single"
-            SelectedItem="{Binding SelectedCard}"
-            SelectionChangedCommand="{Binding NavigateToCardCommand, Source={RelativeSource AncestorType={x:Type pageModels:CardListPageModel}}, x:DataType=pageModels:CardListPageModel}"
-            SelectionChangedCommandParameter="{Binding SelectedCard}">
-            <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Vertical" ItemSpacing="7.5"/>
-            </CollectionView.ItemsLayout>
-            <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:CardDTO">
-                    <Border SemanticProperties.Description="{Binding DisplayName}">
-                        <VerticalStackLayout Padding="10" Spacing="4">
-                            <Label Text="{Binding DisplayName}" Style="{StaticResource Body1Strong}" />
-                            <Label Text="{Binding Provider}" Style="{StaticResource Caption1}" />
-                            <Label Text="{Binding Profile.Name, StringFormat='Owner: {0}'}" Style="{StaticResource Caption2}" />
+        <sf:SfPullToRefresh IsRefreshing="{Binding IsRefreshing}"
+                            RefreshCommand="{Binding RefreshCommand}">
+            <sf:SfPullToRefresh.PullableContent>
+                <CollectionView ItemsSource="{Binding Cards}"
+                    Margin="{StaticResource LayoutPadding}"
+                    SelectionMode="Single"
+                    SelectedItem="{Binding SelectedCard}"
+                    SelectionChangedCommand="{Binding NavigateToCardCommand}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="7.5"/>
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:CardDto">
+                            <Border SemanticProperties.Description="{Binding DisplayName}">
+                                <VerticalStackLayout Padding="10" Spacing="4">
+                                    <Label Text="{Binding DisplayName}"
+                                           Style="{StaticResource Body1Strong}" />
+                                    <Label Text="{Binding Name}"
+                                           Style="{StaticResource Caption1}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout VerticalOptions="Center"
+                                            HorizontalOptions="Center"
+                                            Spacing="20">
+                            <Label Text="No cards yet"
+                                   Style="{StaticResource Body1}"
+                                   HorizontalOptions="Center"/>
+                            <Label Text="Tap + to add your first card"
+                                   Style="{StaticResource Caption1}"
+                                   HorizontalOptions="Center"/>
                         </VerticalStackLayout>
-                    </Border>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </sf:SfPullToRefresh.PullableContent>
+        </sf:SfPullToRefresh>
 
         <controls:AddButton Command="{Binding AddCardCommand}"
                             SemanticProperties.Description="Add card" />

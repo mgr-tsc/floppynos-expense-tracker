@@ -15,29 +15,29 @@ public class HouseholdRepository
         _logger = logger;
     }
 
-    public async Task<List<HouseHoldDTO>> ListAsync()
+    public async Task<List<HouseHoldDto>> ListAsync()
     {
-        var result = await _supabase.Client!.From<HouseHoldDTO>().Get();
+        var result = await _supabase.Client!.From<HouseHoldDto>().Get();
         return result.Models;
     }
 
-    public async Task<HouseHoldDTO?> GetAsync(long id)
+    public async Task<HouseHoldDto?> GetAsync(long id)
     {
-        return await _supabase.Client!.From<HouseHoldDTO>()
+        return await _supabase.Client!.From<HouseHoldDto>()
             .Where(x => x.Id == id)
             .Single();
     }
 
-    public async Task<HouseHoldDTO> SaveAsync(HouseHoldDTO item)
+    public async Task<HouseHoldDto> SaveAsync(HouseHoldDto item)
     {
         if (item.Id == 0)
         {
-            var result = await _supabase.Client!.From<HouseHoldDTO>().Insert(item);
+            var result = await _supabase.Client!.From<HouseHoldDto>().Insert(item);
             return result.Models.First();
         }
         else
         {
-            var result = await _supabase.Client!.From<HouseHoldDTO>()
+            var result = await _supabase.Client!.From<HouseHoldDto>()
                 .Where(x => x.Id == item.Id)
                 .Update(item);
             return result.Models.First();
@@ -46,7 +46,7 @@ public class HouseholdRepository
 
     public async Task DeleteAsync(long id)
     {
-        await _supabase.Client!.From<HouseHoldDTO>()
+        await _supabase.Client!.From<HouseHoldDto>()
             .Where(x => x.Id == id)
             .Delete();
     }
@@ -54,12 +54,12 @@ public class HouseholdRepository
     /// <summary>
     /// Check if a user belongs to any household (as user_a or user_b)
     /// </summary>
-    public async Task<HouseHoldDTO?> GetByUserIdAsync(string userId)
+    public async Task<HouseHoldDto?> GetByUserIdAsync(string userId)
     {
         _logger.LogInformation("[HouseholdRepository] Searching for household with userId: {UserId}", userId);
 
         // Query user_a_id_fk = userId
-        var result = await _supabase.Client!.From<HouseHoldDTO>()
+        var result = await _supabase.Client!.From<HouseHoldDto>()
             .Filter("user_a_id_fk", Constants.Operator.Equals, userId)
             .Get();
 
@@ -73,7 +73,7 @@ public class HouseholdRepository
         }
 
         // Query user_b_id_fk = userId
-        result = await _supabase.Client!.From<HouseHoldDTO>()
+        result = await _supabase.Client!.From<HouseHoldDto>()
             .Filter("user_b_id_fk", Constants.Operator.Equals, userId)
             .Get();
 
@@ -85,9 +85,9 @@ public class HouseholdRepository
     /// <summary>
     /// Find a household by its join code
     /// </summary>
-    public async Task<HouseHoldDTO?> GetByCodeAsync(long code)
+    public async Task<HouseHoldDto?> GetByCodeAsync(long code)
     {
-        var result = await _supabase.Client!.From<HouseHoldDTO>()
+        var result = await _supabase.Client!.From<HouseHoldDto>()
             .Filter("code", Constants.Operator.Equals, code)
             .Filter("enabled", Constants.Operator.Equals, true)
             .Get();

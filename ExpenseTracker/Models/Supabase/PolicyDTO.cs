@@ -4,7 +4,7 @@ using Supabase.Postgrest.Models;
 namespace ExpenseTracker.Models.Supabase;
 
 [Table("POLICY")]
-public class PolicyDTO: BaseModel
+public class PolicyDto: BaseModel
 {
     [PrimaryKey("id")]
     public long Id { get; set; }

@@ -4,7 +4,7 @@ using Supabase.Postgrest.Models;
 namespace ExpenseTracker.Models.Supabase;
 
 [Table("TEMPORARY_RECORDS")]
-public class TemporaryRecordDTO: BaseModel
+public class TemporaryRecordDto: BaseModel
 {
     [PrimaryKey("id")]
     public int Id { get; set; }

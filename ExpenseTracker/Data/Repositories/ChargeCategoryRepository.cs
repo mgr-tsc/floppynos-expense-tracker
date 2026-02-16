@@ -14,15 +14,15 @@ public class ChargeCategoryRepository
         _logger = logger;
     }
 
-    public async Task<List<ChargeCategoryDTO>> ListAsync()
+    public async Task<List<ChargeCategoryDto>> ListAsync()
     {
-        var result = await _supabase.Client!.From<ChargeCategoryDTO>().Get();
+        var result = await _supabase.Client!.From<ChargeCategoryDto>().Get();
         return result.Models;
     }
 
-    public async Task<ChargeCategoryDTO?> GetAsync(short id)
+    public async Task<ChargeCategoryDto?> GetAsync(short id)
     {
-        return await _supabase.Client!.From<ChargeCategoryDTO>()
+        return await _supabase.Client!.From<ChargeCategoryDto>()
             .Where(x => x.Id == id)
             .Single();
     }

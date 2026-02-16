@@ -4,7 +4,7 @@ using Supabase.Postgrest.Models;
 namespace ExpenseTracker.Models.Supabase;
 
 [Table("CHARGE_CAT_UNUSED")]
-public class ChargeCategoryDTO: BaseModel
+public class ChargeCategoryDto: BaseModel
 {
     [PrimaryKey("id")]
     public short Id { get; set; }

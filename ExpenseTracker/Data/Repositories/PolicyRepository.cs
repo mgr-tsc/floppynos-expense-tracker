@@ -14,15 +14,15 @@ public class PolicyRepository
         _logger = logger;
     }
 
-    public async Task<List<PolicyDTO>> ListAsync()
+    public async Task<List<PolicyDto>> ListAsync()
     {
-        var result = await _supabase.Client!.From<PolicyDTO>().Get();
+        var result = await _supabase.Client!.From<PolicyDto>().Get();
         return result.Models;
     }
 
-    public async Task<PolicyDTO?> GetAsync(long id)
+    public async Task<PolicyDto?> GetAsync(long id)
     {
-        return await _supabase.Client!.From<PolicyDTO>()
+        return await _supabase.Client!.From<PolicyDto>()
             .Where(x => x.Id == id)
             .Single();
     }

@@ -3,9 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
              xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="ExpenseTracker.Pages.CardDetailPage"
              x:DataType="pageModels:CardDetailPageModel"
              Title="Card">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <toolkit:IsNotNullConverter x:Key="IsNotNullConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem
@@ -18,32 +26,52 @@
     </ContentPage.ToolbarItems>
 
     <ScrollView>
-        <VerticalStackLayout Padding="{StaticResource LayoutPadding}" Spacing="{StaticResource LayoutSpacing}">
-            <sf:SfTextInputLayout Hint="Provider">
-                <Entry Text="{Binding Provider}" SemanticProperties.Description="Provider" />
+        <VerticalStackLayout Padding="{StaticResource LayoutPadding}"
+                             Spacing="{StaticResource LayoutSpacing}">
+
+            <!-- CARD NAME -->
+            <sf:SfTextInputLayout Hint="Card Name">
+                <Entry Text="{Binding Name}"
+                       Placeholder="e.g., Chase Sapphire"
+                       SemanticProperties.Description="Card name or alias" />
             </sf:SfTextInputLayout>
 
-            <sf:SfTextInputLayout Hint="Alias">
-                <Entry Text="{Binding Alias}" SemanticProperties.Description="Alias" />
-            </sf:SfTextInputLayout>
+            <!-- CARD NETWORK -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Network"
+                       Style="{StaticResource Caption1}" />
+                <Picker ItemsSource="{Binding CardNetworks}"
+                        SelectedIndex="{Binding SelectedNetworkIndex}"
+                        Title="Select network"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                        SemanticProperties.Description="Card network (Visa, MasterCard, etc.)" />
+            </VerticalStackLayout>
 
+            <!-- LAST 4 DIGITS -->
             <sf:SfTextInputLayout Hint="Last 4 Digits">
-                <Entry Text="{Binding LastFourDigits}"
+                <Entry Text="{Binding LastDigits}"
                        MaxLength="4"
                        Keyboard="Numeric"
+                       Placeholder="1234"
                        SemanticProperties.Description="Last four digits" />
             </sf:SfTextInputLayout>
 
-            <sf:SfTextInputLayout Hint="Owner">
-                <Picker ItemsSource="{Binding Profiles}"
-                        SelectedItem="{Binding SelectedProfile}"
-                        SelectedIndex="{Binding ProfileIndex}"
-                        SemanticProperties.Description="Card owner" />
-            </sf:SfTextInputLayout>
+            <!-- ERROR MESSAGE -->
+            <Label Text="{Binding ErrorMessage}"
+                   TextColor="Red"
+                   IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullConverter}}"
+                   HorizontalOptions="Center" />
 
+            <!-- SAVE BUTTON -->
             <Button Text="Save"
-                MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
-                Command="{Binding SaveCommand}" />
+                    MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+
+            <!-- LOADING INDICATOR -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               HorizontalOptions="Center" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -10,7 +10,7 @@ namespace ExpenseTracker.Services;
 public class SupabaseService
 {
     public Client? Client { get; private set; }
-    private JsonSerializerOptions? _jsonSerializerOptions => new JsonSerializerOptions
+    private JsonSerializerOptions? JsonSerializerOptions => new JsonSerializerOptions
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         WriteIndented = false
@@ -109,7 +109,7 @@ public class SupabaseService
         }
     }
 
-    private TemporaryRecordDTO CreateHouseHoldTemporaryRecord(string houseHoldName, int code, string userEmail)
+    private TemporaryRecordDto CreateHouseHoldTemporaryRecord(string houseHoldName, int code, string userEmail)
     {
         var houseHoldCreationData = new HouseHoldCreationRecord
         {
@@ -119,12 +119,12 @@ public class SupabaseService
             CodeToJoin = code.ToString(),
             Uuid = Guid.NewGuid().ToString()
         };
-        var tempRecord = new TemporaryRecordDTO
+        var tempRecord = new TemporaryRecordDto
         {
             CreatedAt = DateTimeOffset.UtcNow,
             ExpireAt = DateTimeOffset.UtcNow.AddMinutes(60),
             Key = $"_household_creation_{houseHoldName}",
-            Record = JsonSerializer.Serialize(houseHoldCreationData, _jsonSerializerOptions)
+            Record = JsonSerializer.Serialize(houseHoldCreationData, JsonSerializerOptions)
         };
         return tempRecord;
     }

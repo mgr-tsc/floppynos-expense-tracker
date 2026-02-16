@@ -5,7 +5,7 @@ namespace ExpenseTracker.PageModels;
 
 public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributable
 {
-    private ChargeDTO? _expense;
+    private ChargeDto? _expense;
     private readonly ModalErrorHandler _errorHandler;
 
     [ObservableProperty] private string _description = string.Empty;
@@ -14,9 +14,9 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
 
     [ObservableProperty] private DateTime _date = DateTime.Today;
 
-    [ObservableProperty] private List<CardDTO> _cards = [];
+    [ObservableProperty] private List<CardDto> _cards = [];
 
-    [ObservableProperty] private CardDTO? _selectedCard;
+    [ObservableProperty] private CardDto? _selectedCard;
 
     [ObservableProperty] private int _cardIndex = -1;
     

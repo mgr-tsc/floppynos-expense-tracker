@@ -4,7 +4,7 @@ using Supabase.Postgrest.Models;
 namespace ExpenseTracker.Models.Supabase;
 
 [Table("CHARGE")]
-public class ChargeDTO : BaseModel
+public class ChargeDto : BaseModel
 {
     [PrimaryKey("id")]
     public long Id { get; set; }
@@ -34,12 +34,12 @@ public class ChargeDTO : BaseModel
     public string UserIdFk { get; set; }
 
     // Navigation properties
-    [Reference(typeof(PolicyDTO))]
-    public PolicyDTO ChargePolicy { get; set; }
+    [Reference(typeof(PolicyDto))]
+    public PolicyDto ChargePolicy { get; set; }
 
-    [Reference(typeof(ChargeCategoryDTO))]
-    public ChargeCategoryDTO ChargeCategory { get; set; }
+    [Reference(typeof(ChargeCategoryDto))]
+    public ChargeCategoryDto ChargeCategory { get; set; }
 
-    [Reference(typeof(CardDTO))]
-    public CardDTO ChargeCard { get; set; }
+    [Reference(typeof(CardDto))]
+    public CardDto ChargeCard { get; set; }
 }

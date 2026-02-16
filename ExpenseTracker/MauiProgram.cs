@@ -32,7 +32,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 fonts.AddFont("SegoeUI-Semibold.ttf", "SegoeSemibold");
-                fonts.AddFont("FluentSystemIcons-Regular.ttf", FluentUI.FontFamily);
+                fonts.AddFont("FluentSystemIcons-Regular.ttf", FluentUi.fontFamily);
             });
 
         // Enable console logging (so you can see logs in the terminal) and set minimum level to Debug for the POC.
