@@ -17,7 +17,17 @@ public class ChargeRepository
     public async Task<List<ChargeDto>> ListAsync()
     {
         var result = await _supabase.Client!.From<ChargeDto>()
-            .Select("*, POLICY(*), CHARGE_CAT_UNUSED(*), CARD_RECORD(*)")
+            .Select("*")
+            .Get();
+        return result.Models;
+    }
+
+    
+    public async Task<List<ChargeDto>> ListByHouseholdAsync(long householdId)
+    {
+        var result = await _supabase.Client!.From<ChargeDto>()
+            .Select("*")
+            .Where(x => x.HouseholdIdFk == householdId)
             .Get();
         return result.Models;
     }
@@ -25,7 +35,7 @@ public class ChargeRepository
     public async Task<ChargeDto?> GetAsync(long id)
     {
         return await _supabase.Client!.From<ChargeDto>()
-            .Select("*, POLICY(*), CHARGE_CAT_UNUSED(*), CARD_RECORD(*)")
+            .Select("*")
             .Where(x => x.Id == id)
             .Single();
     }

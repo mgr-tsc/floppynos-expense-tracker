@@ -26,4 +26,10 @@ public class ChargeCategoryRepository
             .Where(x => x.Id == id)
             .Single();
     }
+
+    public async Task<ChargeCategoryDto> SaveAsync(ChargeCategoryDto item)
+    {
+        var result = await _supabase.Client!.From<ChargeCategoryDto>().Insert(item);
+        return result.Models.First();
+    }
 }

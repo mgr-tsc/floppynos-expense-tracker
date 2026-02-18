@@ -76,6 +76,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ManageProfilesPage>();
         builder.Services.AddSingleton<HouseholdSetupPageModel>();
         builder.Services.AddSingleton<HouseholdSetupPage>();
+        builder.Services.AddSingleton<MockHomePage>();
 
         builder.Services.AddTransientWithShellRoute<ExpenseDetailPage, ExpenseDetailPageModel>("expense");
         builder.Services.AddTransientWithShellRoute<CreateHouseholdPage, CreateHouseholdPageModel>("createhousehold");

@@ -36,6 +36,9 @@ public class ChargeDto : BaseModel
     [Column("household_id_fk")]
     public long HouseholdIdFk { get; set; }
 
+    [Column("status")]
+    public string Status { get; set; } = "pending";
+
     // Navigation properties
     [Reference(typeof(PolicyDto))]
     public PolicyDto ChargePolicy { get; set; }
@@ -45,4 +48,29 @@ public class ChargeDto : BaseModel
 
     [Reference(typeof(CardDto))]
     public CardDto ChargeCard { get; set; }
+
+    // Computed display properties
+    [Newtonsoft.Json.JsonIgnore]
+    public string DisplayAmount => Amount.ToString("C");
+
+    [Newtonsoft.Json.JsonIgnore]
+    public string DisplayDate => TransactionDate?.ToString("MMM d") ?? "";
+
+    [Newtonsoft.Json.JsonIgnore]
+    public string SplitPolicy => ChargePolicy?.DisplayLabel ?? "";
+
+    [Newtonsoft.Json.JsonIgnore]
+    public string StatusLabel => string.IsNullOrEmpty(Status)
+        ? ""
+        : char.ToUpper(Status[0]) + Status[1..];
+
+    [Newtonsoft.Json.JsonIgnore]
+    public Color StatusColor => Status?.ToLower() switch
+    {
+        "approved" => Colors.Green,
+        "rejected" => Colors.Red,
+        _ => Colors.Orange,
+    };
+
+    public bool IsOwnCharge(string currentUserId) => UserIdFk == currentUserId;
 }

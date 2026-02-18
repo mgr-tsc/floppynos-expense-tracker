@@ -109,6 +109,30 @@ public class SupabaseService
         }
     }
 
+    public async Task<BalanceData?> GetHouseholdBalanceAsync(long householdId)
+    {
+        try
+        {
+            var parameters = new Dictionary<string, object>
+            {
+                { "p_household_id", householdId }
+            };
+
+            var result = await Client!.Rpc("calculate_household_balance", parameters);
+            var content = result.Content?.ToString();
+
+            if (string.IsNullOrEmpty(content))
+                return null;
+
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<BalanceData>(content);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"SupabaseService.GetHouseholdBalanceAsync failed: {ex.Message}");
+            return null;
+        }
+    }
+
     private TemporaryRecordDto CreateHouseHoldTemporaryRecord(string houseHoldName, int code, string userEmail)
     {
         var houseHoldCreationData = new HouseHoldCreationRecord

@@ -3,7 +3,7 @@ using Supabase.Postgrest.Models;
 
 namespace ExpenseTracker.Models.Supabase;
 
-[Table("CHARGE_CAT_UNUSED")]
+[Table("CHARGE_CATEGORY")]
 public class ChargeCategoryDto: BaseModel
 {
     [PrimaryKey("id")]
@@ -11,4 +11,6 @@ public class ChargeCategoryDto: BaseModel
 
     [Column("category_name")]
     public string Name { get; set; }
+
+    public override string ToString() => Name;
 }

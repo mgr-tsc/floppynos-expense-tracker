@@ -51,6 +51,29 @@
                         Title="Select card"
                         SemanticProperties.Description="Payment card" />
 
+                <!-- Category Picker -->
+                <HorizontalStackLayout Margin="0,8,0,0" Spacing="6">
+                    <Label Text="Category"
+                           Style="{StaticResource Caption1}"
+                           VerticalOptions="Center" />
+                    <ImageButton Command="{Binding AddCategoryCommand}"
+                                 WidthRequest="20"
+                                 HeightRequest="20"
+                                 VerticalOptions="Center"
+                                 SemanticProperties.Description="Add category">
+                        <ImageButton.Source>
+                            <FontImageSource Glyph="{x:Static fonts:FluentUi.add_circle_20_regular}"
+                                             FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                             Size="20"
+                                             Color="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
+                        </ImageButton.Source>
+                    </ImageButton>
+                </HorizontalStackLayout>
+                <Picker ItemsSource="{Binding Categories}"
+                        SelectedIndex="{Binding CategoryIndex}"
+                        Title="Select category"
+                        SemanticProperties.Description="Charge category" />
+
                 <!-- Split Policy Picker -->
                 <HorizontalStackLayout Margin="0,8,0,0" Spacing="6">
                     <Label Text="Split Policy"
@@ -73,10 +96,32 @@
                         SelectedIndex="{Binding SplitOptionIndex}"
                         Title="Select split policy"
                         SemanticProperties.Description="Split policy" />
+                <!-- Save button (new charges only) -->
                 <Button Text="Save"
                     MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
                     Command="{Binding SaveCommand}"
+                    IsVisible="{Binding IsExisting, Converter={StaticResource InvertedBoolConverter}}"
                     IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+
+                <!-- Approve/Reject buttons (partner's pending charges only) -->
+                <HorizontalStackLayout Spacing="12"
+                    HorizontalOptions="Fill"
+                    IsVisible="{Binding CanApprove}">
+                    <Button Text="Approve"
+                        BackgroundColor="Green"
+                        TextColor="White"
+                        HorizontalOptions="FillAndExpand"
+                        MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
+                        Command="{Binding ApproveCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                    <Button Text="Reject"
+                        BackgroundColor="Red"
+                        TextColor="White"
+                        HorizontalOptions="FillAndExpand"
+                        MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
+                        Command="{Binding RejectCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                </HorizontalStackLayout>
             </VerticalStackLayout>
         </ScrollView>
         

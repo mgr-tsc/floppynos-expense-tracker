@@ -44,6 +44,12 @@
         ContentTemplate="{DataTemplate pages:ManageProfilesPage}"
         Route="settings" />
 
+    <ShellContent
+        Title="Mock Home"
+        Icon="{StaticResource IconMockHome}"
+        ContentTemplate="{DataTemplate pages:MockHomePage}"
+        Route="mockhome" />
+
     <Shell.FlyoutFooter>
         <Grid Padding="15">
             <sf:SfSegmentedControl x:Name="ThemeSegmentedControl"

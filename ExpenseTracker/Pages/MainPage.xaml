@@ -5,6 +5,7 @@
              xmlns:models="clr-namespace:ExpenseTracker.Models.Supabase"
              xmlns:controls="clr-namespace:ExpenseTracker.Pages.Controls"
              xmlns:pullToRefresh="clr-namespace:Syncfusion.Maui.Toolkit.PullToRefresh;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="ExpenseTracker.Pages.MainPage"
              x:DataType="pageModels:MainPageModel"
@@ -31,8 +32,9 @@
             <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
-    <StackLayout x:Name="MainLayout">
-        <Grid>
+    <Grid RowDefinitions="*,Auto">
+        <!-- Main Content Area -->
+        <Grid Grid.Row="0">
             <pullToRefresh:SfPullToRefresh
                 IsRefreshing="{Binding IsRefreshing}"
                 RefreshCommand="{Binding RefreshCommand}">
@@ -44,13 +46,26 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <controls:HeaderBar Grid.Row="0" UserName="{Binding UserName}" ></controls:HeaderBar>
                             <controls:BalanceView Grid.Row="1" BindingContext="{Binding Balance}" />
-                            <!-- <Label Grid.Row="1" Text="Recent Expenses" Style="{StaticResource Title2}" -->
-                            <!--        SemanticProperties.HeadingLevel="Level1" -->
-                            <!--        Margin="0,10,0,0" /> -->
-                            <VerticalStackLayout Grid.Row="2" Spacing="15"
+                            <sf:SfSegmentedControl Grid.Row="2"
+                                x:Name="StatusFilter"
+                                SelectedIndex="{Binding SelectedStatusIndex}"
+                                SelectionChanged="StatusFilter_SelectionChanged"
+                                HorizontalOptions="Center"
+                                Margin="0,4,0,0">
+                                <sf:SfSegmentedControl.ItemsSource>
+                                    <x:Array Type="{x:Type sf:SfSegmentItem}">
+                                        <sf:SfSegmentItem Text="All" />
+                                        <sf:SfSegmentItem Text="Pending" />
+                                        <sf:SfSegmentItem Text="Approved" />
+                                    </x:Array>
+                                </sf:SfSegmentedControl.ItemsSource>
+                            </sf:SfSegmentedControl>
+                            <VerticalStackLayout Grid.Row="3" Spacing="15"
+                                Margin="0,0,0,20"
                                 BindableLayout.ItemsSource="{Binding Expenses}">
                                 <BindableLayout.ItemTemplate>
                                     <DataTemplate x:DataType="models:ChargeDto">
@@ -66,7 +81,8 @@
             <controls:AddButton
                 IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                 Command="{Binding AddExpenseCommand}"
+                Margin="30,30,30,110"
                 SemanticProperties.Description="Add expense" />
         </Grid>
-    </StackLayout>
+    </Grid>
 </ContentPage>
