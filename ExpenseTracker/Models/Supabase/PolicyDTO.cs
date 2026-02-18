@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
@@ -20,4 +21,12 @@ public class PolicyDto: BaseModel
 
     [Column("user_b_percentage")]
     public short UserBPercentage { get; set; }
+
+    [Column("description")]
+    public string? Description { get; set; }
+
+    [JsonIgnore]
+    public string DisplayLabel => Label ?? $"{UserAPercentage}/{UserBPercentage}";
+
+    public override string ToString() => DisplayLabel;
 }

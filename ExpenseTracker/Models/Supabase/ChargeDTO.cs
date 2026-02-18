@@ -33,6 +33,9 @@ public class ChargeDto : BaseModel
     [Column("user_id_fk")]
     public string UserIdFk { get; set; }
 
+    [Column("household_id_fk")]
+    public long HouseholdIdFk { get; set; }
+
     // Navigation properties
     [Reference(typeof(PolicyDto))]
     public PolicyDto ChargePolicy { get; set; }

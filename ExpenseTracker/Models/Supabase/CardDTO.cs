@@ -28,4 +28,6 @@ public class CardDto: BaseModel
     // Computed property for list display (not stored in DB)
     [JsonIgnore]
     public string DisplayName => $"{Symbol} {Name} ••{LastDigits:D4}";
+
+    public override string ToString() => DisplayName;
 }

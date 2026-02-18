@@ -1,5 +1,6 @@
 using ExpenseTracker.Models.Supabase;
 using Microsoft.Extensions.Logging;
+using Supabase.Postgrest;
 
 namespace ExpenseTracker.Data.Repositories;
 
@@ -17,6 +18,13 @@ public class PolicyRepository
     public async Task<List<PolicyDto>> ListAsync()
     {
         var result = await _supabase.Client!.From<PolicyDto>().Get();
+        return result.Models;
+    }
+
+    public async Task<List<PolicyDto>> ListAvailableAsync()
+    {
+        var result = await _supabase.Client!.From<PolicyDto>()
+            .Get();
         return result.Models;
     }
 

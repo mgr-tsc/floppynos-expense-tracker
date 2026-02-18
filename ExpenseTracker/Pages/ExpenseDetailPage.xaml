@@ -2,56 +2,87 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
-             xmlns:models="clr-namespace:ExpenseTracker.Models"
+             xmlns:models="clr-namespace:ExpenseTracker.Models.Supabase"
              xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:fonts="clr-namespace:ExpenseTracker.Resources.Fonts"
              x:Class="ExpenseTracker.Pages.ExpenseDetailPage"
              x:DataType="pageModels:ExpenseDetailPageModel"
              Title="Charge">
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem
-            Text="Delete"
-            Command="{Binding DeleteCommand}"
-            Order="Primary"
-            Priority="0"
-            IconImageSource="{StaticResource IconDelete}"
-            SemanticProperties.Description="Delete Charge" />
-    </ContentPage.ToolbarItems>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <toolkit:IsNotNullConverter x:Key="IsNotNullConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
 
-    <ScrollView>
-        <VerticalStackLayout Padding="{StaticResource LayoutPadding}" Spacing="{StaticResource LayoutSpacing}">
-            <sf:SfTextInputLayout Hint="Description">
-                <Entry Text="{Binding Description}" SemanticProperties.Description="Description" />
-            </sf:SfTextInputLayout>
+    <Grid>
+        <ScrollView IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+            <VerticalStackLayout Padding="{StaticResource LayoutPadding}" Spacing="{StaticResource LayoutSpacing}">
 
-            <sf:SfTextInputLayout Hint="Amount">
-                <Entry Text="{Binding Amount}"
-                       Keyboard="Numeric"
-                       SemanticProperties.Description="Amount" />
-            </sf:SfTextInputLayout>
+                <!-- Error message -->
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="Red"
+                       IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullConverter}}"
+                       Style="{StaticResource Caption1}" />
 
-            <sf:SfTextInputLayout Hint="Date">
-                <DatePicker Date="{Binding Date}"
-                            SemanticProperties.Description="Charge date" />
-            </sf:SfTextInputLayout>
+                <sf:SfTextInputLayout Hint="Description">
+                    <Entry Text="{Binding Description}" SemanticProperties.Description="Description" />
+                </sf:SfTextInputLayout>
 
-            <sf:SfTextInputLayout Hint="Card">
+                <sf:SfTextInputLayout Hint="Amount">
+                    <Entry Text="{Binding Amount}"
+                           Keyboard="Numeric"
+                           SemanticProperties.Description="Amount" />
+                </sf:SfTextInputLayout>
+
+                <sf:SfTextInputLayout Hint="Date">
+                    <DatePicker Date="{Binding Date}"
+                                SemanticProperties.Description="Charge date" />
+                </sf:SfTextInputLayout>
+
+                <!-- Card Picker -->
+                <Label Text="Card"
+                       Style="{StaticResource Caption1}"
+                       Margin="0,8,0,0" />
                 <Picker ItemsSource="{Binding Cards}"
-                        SelectedItem="{Binding SelectedCard}"
                         SelectedIndex="{Binding CardIndex}"
+                        Title="Select card"
                         SemanticProperties.Description="Payment card" />
-            </sf:SfTextInputLayout>
 
-            <sf:SfTextInputLayout Hint="Split Policy">
+                <!-- Split Policy Picker -->
+                <HorizontalStackLayout Margin="0,8,0,0" Spacing="6">
+                    <Label Text="Split Policy"
+                           Style="{StaticResource Caption1}"
+                           VerticalOptions="Center" />
+                    <!-- <ImageButton Command="{Binding ShowPolicyInfoCommand}" -->
+                    <!--              WidthRequest="20" -->
+                    <!--              HeightRequest="20" -->
+                    <!--              VerticalOptions="Center" -->
+                    <!--              SemanticProperties.Description="Policy info"> -->
+                    <!--     <ImageButton.Source> -->
+                    <!--         <FontImageSource Glyph="{x:Static fonts:FluentUi.question_circle_12_regular}" -->
+                    <!--                          FontFamily="{x:Static fonts:FluentUi.fontFamily}" -->
+                    <!--                          Size="12" -->
+                    <!--                          Color="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" /> -->
+                    <!--     </ImageButton.Source> -->
+                    <!-- </ImageButton> -->
+                </HorizontalStackLayout>
                 <Picker ItemsSource="{Binding SplitOptions}"
-                        SelectedItem="{Binding SelectedSplitOption}"
                         SelectedIndex="{Binding SplitOptionIndex}"
+                        Title="Select split policy"
                         SemanticProperties.Description="Split policy" />
-            </sf:SfTextInputLayout>
-
-            <Button Text="Save"
-                MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
-                Command="{Binding SaveCommand}" />
-        </VerticalStackLayout>
-    </ScrollView>
+                <Button Text="Save"
+                    MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
+                    Command="{Binding SaveCommand}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+            </VerticalStackLayout>
+        </ScrollView>
+        
+        <ActivityIndicator IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+    </Grid>
 </ContentPage>
