@@ -11,7 +11,8 @@
              x:Class="ExpenseTracker.Pages.MainPage"
              x:DataType="pageModels:MainPageModel"
              x:Name="OverviewPage"
-             Title="{Binding Today}">
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource AppBackground}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
@@ -33,74 +34,199 @@
             <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
-    <Grid RowDefinitions="*,Auto">
-        <!-- Main Content Area -->
-        <Grid Grid.Row="0">
-            <pullToRefresh:SfPullToRefresh
-                IsRefreshing="{Binding IsRefreshing}"
-                RefreshCommand="{Binding RefreshCommand}">
-                <pullToRefresh:SfPullToRefresh.PullableContent>
-                    <ScrollView>
-                        <Grid Padding="{StaticResource LayoutPadding}" 
-                              RowSpacing="{StaticResource LayoutSpacing}">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <controls:HeaderBar Grid.Row="0" UserName="{Binding UserName}" ></controls:HeaderBar>
-                            <controls:BalanceView Grid.Row="1" BindingContext="{Binding Balance}" />
-                            <sf:SfSegmentedControl Grid.Row="2"
-                                x:Name="StatusFilter"
-                                SelectedIndex="{Binding SelectedStatusIndex}"
-                                SelectionChanged="StatusFilter_SelectionChanged"
-                                HorizontalOptions="Center"
-                                Margin="0,4,0,0">
-                                <sf:SfSegmentedControl.ItemsSource>
-                                    <x:Array Type="{x:Type sf:SfSegmentItem}">
-                                        <sf:SfSegmentItem Text="All" />
-                                        <sf:SfSegmentItem Text="Pending" />
-                                        <sf:SfSegmentItem Text="Approved" />
-                                    </x:Array>
-                                </sf:SfSegmentedControl.ItemsSource>
-                            </sf:SfSegmentedControl>
-                            <VerticalStackLayout Grid.Row="3" Spacing="15"
-                                Margin="0,0,0,20"
-                                BindableLayout.ItemsSource="{Binding Expenses}">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:ChargeDto">
-                                        <controls:ExpenseItemView />
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </VerticalStackLayout>
-                        </Grid>
-                    </ScrollView>
-                </pullToRefresh:SfPullToRefresh.PullableContent>
-            </pullToRefresh:SfPullToRefresh>
+    
+    <Grid>
 
-            <VerticalStackLayout VerticalOptions="End" HorizontalOptions="End" Spacing="12" Margin="30">
-                <Button
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-                    Command="{Binding AddPaymentCommand}"
-                    BackgroundColor="{StaticResource Primary}"
-                    CornerRadius="30"
-                    HeightRequest="60"
-                    WidthRequest="60"
-                    SemanticProperties.Description="Add payment">
-                    <Button.ImageSource>
-                        <FontImageSource Glyph="{x:Static fonts:FluentUi.money_20_regular}"
-                                         FontFamily="{x:Static fonts:FluentUi.fontFamily}"
-                                         Size="24"
-                                         Color="White" />
-                    </Button.ImageSource>
-                </Button>
-                <controls:AddButton
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-                    Command="{Binding AddExpenseCommand}"
-                    Margin="0"
-                    SemanticProperties.Description="Add expense" />
-            </VerticalStackLayout>
-        </Grid>
+        <pullToRefresh:SfPullToRefresh
+            IsRefreshing="{Binding IsRefreshing}"
+            RefreshCommand="{Binding RefreshCommand}">
+            <pullToRefresh:SfPullToRefresh.PullableContent>
+                <ScrollView Padding="0,0,0,90">
+                    <VerticalStackLayout Padding="28,8,28,28" Spacing="24">
+
+                        <!-- Header: username + initials avatar -->
+                        <controls:HeaderBar
+                            UserName="{Binding UserName}"
+                            UserInitials="{Binding UserInitials}" />
+
+                        <!-- Household indicator -->
+                        <controls:HouseholdSwitcher HouseholdName="{Binding HouseholdName}" />
+
+                        <!-- Balance card -->
+                        <controls:BalanceView BindingContext="{Binding Balance}" />
+
+                        <!-- ═══════════ CHARGES SECTION ═══════════ -->
+                        <VerticalStackLayout Spacing="14">
+
+                            <!-- Section header -->
+                            <Grid ColumnDefinitions="*,Auto">
+                                <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                                    <HorizontalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding ToggleChargesCommand}" />
+                                    </HorizontalStackLayout.GestureRecognizers>
+                                    <Label Text="{x:Static fonts:FluentUi.chevron_down_20_regular}"
+                                           IsVisible="{Binding IsChargesExpanded}"
+                                           FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                           FontSize="14"
+                                           TextColor="{StaticResource MutedText}"
+                                           VerticalOptions="Center" />
+                                    <Label Text="{x:Static fonts:FluentUi.chevron_right_20_regular}"
+                                           IsVisible="{Binding IsChargesExpanded, Converter={StaticResource InvertedBoolConverter}}"
+                                           FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                           FontSize="14"
+                                           TextColor="{StaticResource MutedText}"
+                                           VerticalOptions="Center" />
+                                    <Label Text="Charges"
+                                           Style="{StaticResource SectionLabelStyle}"
+                                           VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                                <Button Grid.Column="1"
+                                        Text="+ NEW"
+                                        Command="{Binding AddExpenseCommand}"
+                                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                        BackgroundColor="Transparent"
+                                        BorderColor="{StaticResource StrokeColor}"
+                                        BorderWidth="1"
+                                        TextColor="{StaticResource GoldAccent}"
+                                        CornerRadius="12"
+                                        FontSize="11"
+                                        Padding="10,4"
+                                        HeightRequest="28" />
+                            </Grid>
+
+                            <!-- Collapsible content -->
+                            <VerticalStackLayout IsVisible="{Binding IsChargesExpanded}" Spacing="14">
+
+                                <sf:SfSegmentedControl
+                                    x:Name="StatusFilter"
+                                    SelectedIndex="{Binding SelectedStatusIndex}"
+                                    SelectionChanged="StatusFilter_SelectionChanged"
+                                    HorizontalOptions="Fill"
+                                    CornerRadius="12"
+                                    SegmentHeight="36"
+                                    Background="{StaticResource CardSurface}"
+                                    Stroke="{StaticResource StrokeColor}"
+                                    StrokeThickness="1">
+                                    <sf:SfSegmentedControl.SelectionIndicatorSettings>
+                                        <sf:SelectionIndicatorSettings
+                                            Background="{StaticResource GoldAccent}"
+                                            SelectionIndicatorPlacement="Fill"
+                                            TextColor="{StaticResource AppBackground}" />
+                                    </sf:SfSegmentedControl.SelectionIndicatorSettings>
+                                    <sf:SfSegmentedControl.TextStyle>
+                                        <sf:SegmentTextStyle TextColor="{StaticResource DimmedText}" FontSize="13" />
+                                    </sf:SfSegmentedControl.TextStyle>
+                                    <sf:SfSegmentedControl.ItemsSource>
+                                        <x:Array Type="{x:Type sf:SfSegmentItem}">
+                                            <sf:SfSegmentItem Text="All" />
+                                            <sf:SfSegmentItem Text="Pending" />
+                                            <sf:SfSegmentItem Text="Approved" />
+                                        </x:Array>
+                                    </sf:SfSegmentedControl.ItemsSource>
+                                </sf:SfSegmentedControl>
+
+                                <VerticalStackLayout Spacing="12"
+                                    BindableLayout.ItemsSource="{Binding Expenses}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="models:ChargeDto">
+                                            <controls:ExpenseItemView />
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+
+                        <!-- ═══════════ PAYMENTS SECTION ═══════════ -->
+                        <VerticalStackLayout Spacing="14">
+
+                            <!-- Section header -->
+                            <Grid ColumnDefinitions="*,Auto">
+                                <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                                    <HorizontalStackLayout.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding TogglePaymentsCommand}" />
+                                    </HorizontalStackLayout.GestureRecognizers>
+                                    <Label Text="{x:Static fonts:FluentUi.chevron_down_20_regular}"
+                                           IsVisible="{Binding IsPaymentsExpanded}"
+                                           FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                           FontSize="14"
+                                           TextColor="{StaticResource MutedText}"
+                                           VerticalOptions="Center" />
+                                    <Label Text="{x:Static fonts:FluentUi.chevron_right_20_regular}"
+                                           IsVisible="{Binding IsPaymentsExpanded, Converter={StaticResource InvertedBoolConverter}}"
+                                           FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                           FontSize="14"
+                                           TextColor="{StaticResource MutedText}"
+                                           VerticalOptions="Center" />
+                                    <Label Text="Payments"
+                                           Style="{StaticResource SectionLabelStyle}"
+                                           VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                                <Button Grid.Column="1"
+                                        Text="+ ADD"
+                                        Command="{Binding AddPaymentCommand}"
+                                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                        BackgroundColor="Transparent"
+                                        BorderColor="{StaticResource StrokeColor}"
+                                        BorderWidth="1"
+                                        TextColor="{StaticResource GoldAccent}"
+                                        CornerRadius="12"
+                                        FontSize="11"
+                                        Padding="10,4"
+                                        HeightRequest="28" />
+                            </Grid>
+
+                            <!-- Collapsible content -->
+                            <VerticalStackLayout IsVisible="{Binding IsPaymentsExpanded}" Spacing="14">
+
+                                <sf:SfSegmentedControl
+                                    x:Name="PaymentStatusFilter"
+                                    SelectedIndex="{Binding SelectedPaymentStatusIndex}"
+                                    SelectionChanged="PaymentStatusFilter_SelectionChanged"
+                                    HorizontalOptions="Fill"
+                                    CornerRadius="12"
+                                    SegmentHeight="36"
+                                    Background="{StaticResource CardSurface}"
+                                    Stroke="{StaticResource StrokeColor}"
+                                    StrokeThickness="1">
+                                    <sf:SfSegmentedControl.SelectionIndicatorSettings>
+                                        <sf:SelectionIndicatorSettings
+                                            Background="{StaticResource GoldAccent}"
+                                            SelectionIndicatorPlacement="Fill"
+                                            TextColor="{StaticResource AppBackground}" />
+                                    </sf:SfSegmentedControl.SelectionIndicatorSettings>
+                                    <sf:SfSegmentedControl.TextStyle>
+                                        <sf:SegmentTextStyle TextColor="{StaticResource DimmedText}" FontSize="13" />
+                                    </sf:SfSegmentedControl.TextStyle>
+                                    <sf:SfSegmentedControl.ItemsSource>
+                                        <x:Array Type="{x:Type sf:SfSegmentItem}">
+                                            <sf:SfSegmentItem Text="All" />
+                                            <sf:SfSegmentItem Text="Pending" />
+                                            <sf:SfSegmentItem Text="Approved" />
+                                        </x:Array>
+                                    </sf:SfSegmentedControl.ItemsSource>
+                                </sf:SfSegmentedControl>
+
+                                <VerticalStackLayout Spacing="12"
+                                    BindableLayout.ItemsSource="{Binding Payments}">
+                                    <BindableLayout.ItemTemplate>
+                                        <DataTemplate x:DataType="models:PaymentDto">
+                                            <controls:PaymentItemView />
+                                        </DataTemplate>
+                                    </BindableLayout.ItemTemplate>
+                                </VerticalStackLayout>
+
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </ScrollView>
+            </pullToRefresh:SfPullToRefresh.PullableContent>
+        </pullToRefresh:SfPullToRefresh>
+
+        <!-- Floating tab bar overlay -->
+        <controls:CustomTabBar VerticalOptions="End" ActiveTabIndex="0" />
+
     </Grid>
 </ContentPage>

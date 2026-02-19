@@ -20,6 +20,9 @@ public class BalanceData
     public string Summary { get; set; } = string.Empty;
 
     [Newtonsoft.Json.JsonIgnore]
+    public string TotalOwed => (PersonAOwes + PersonBOwes).ToString("C");
+
+    [Newtonsoft.Json.JsonIgnore]
     public PersonInfo PersonA => new() { Name = UserAName };
 
     [Newtonsoft.Json.JsonIgnore]

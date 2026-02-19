@@ -5,8 +5,8 @@
     xmlns:effectsView="clr-namespace:Syncfusion.Maui.Toolkit.EffectsView;assembly=Syncfusion.Maui.Toolkit"
     xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
     xmlns:models="clr-namespace:ExpenseTracker.Models.Supabase"
-    x:Class="ExpenseTracker.Pages.Controls.ExpenseItemView"
-    x:DataType="models:ChargeDto"
+    x:Class="ExpenseTracker.Pages.Controls.PaymentItemView"
+    x:DataType="models:PaymentDto"
     Style="{StaticResource DarkCard}"
     Padding="0">
 
@@ -16,33 +16,27 @@
 
         <Grid ColumnDefinitions="3,*">
 
-            <!-- Status-colored left accent stripe -->
+            <!-- Gold left accent stripe (payments are always gold) -->
             <BoxView Grid.Column="0"
-                     BackgroundColor="{Binding StatusColor}" />
+                     BackgroundColor="{StaticResource GoldAccent}" />
 
             <!-- Content -->
             <Grid Grid.Column="1"
                   ColumnDefinitions="*,Auto"
-                  Padding="16,14"
-                  SemanticProperties.Description="{Binding Description}">
+                  Padding="16,14">
                 <Grid.GestureRecognizers>
                     <TapGestureRecognizer
-                        Command="{Binding NavigateToExpenseCommand, Source={RelativeSource AncestorType={x:Type pageModels:MainPageModel}}, x:DataType=pageModels:MainPageModel}"
+                        Command="{Binding NavigateToPaymentCommand, Source={RelativeSource AncestorType={x:Type pageModels:MainPageModel}}, x:DataType=pageModels:MainPageModel}"
                         CommandParameter="{Binding .}" />
                 </Grid.GestureRecognizers>
 
                 <VerticalStackLayout Grid.Column="0" Spacing="4">
-                    <Label Text="{Binding Description}"
+                    <Label Text="{Binding PaymentMethodLabel}"
                            Style="{StaticResource Body1Strong}"
                            LineBreakMode="TailTruncation" />
-                    <HorizontalStackLayout Spacing="8">
-                        <Label Text="{Binding DisplayDate}"
-                               Style="{StaticResource Caption1}"
-                               TextColor="{StaticResource DimmedText}" />
-                        <Label Text="{Binding SplitPolicy, StringFormat='({0})'}"
-                               Style="{StaticResource Caption1}"
-                               TextColor="{StaticResource DimmedText}" />
-                    </HorizontalStackLayout>
+                    <Label Text="{Binding DisplayDate}"
+                           Style="{StaticResource Caption1}"
+                           TextColor="{StaticResource DimmedText}" />
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">

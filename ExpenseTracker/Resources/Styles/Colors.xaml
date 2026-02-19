@@ -12,10 +12,18 @@
     <Color x:Key="SecondaryDarkText">#9880e5</Color>
     <Color x:Key="Tertiary">#2B0B98</Color>
 
-    <Color x:Key="DarkBackground">#17171a</Color>
+    <Color x:Key="DarkBackground">#111111</Color>
+    <Color x:Key="AppBackground">#111111</Color>
+    <Color x:Key="CardSurface">#1C1C1C</Color>
+    <Color x:Key="ElevatedSurface">#282828</Color>
+    <Color x:Key="StrokeColor">#2A2A2A</Color>
+    <Color x:Key="GoldAccent">#D4AF37</Color>
+    <Color x:Key="MutedText">#666666</Color>
+    <Color x:Key="DimmedText">#A0A0A0</Color>
     <Color x:Key="LightOnDarkBackground">#C3C3C3</Color>
     <Color x:Key="LightBackground">#F2F2F2</Color>
     <Color x:Key="DarkOnLightBackground">#0D0D0D</Color>
+    <Color x:Key="TestDarkColor">#11DFF7</Color>
 
     <Color x:Key="LightSecondaryBackground">#E0E0E0</Color>
     <Color x:Key="DarkSecondaryBackground">#222228</Color>

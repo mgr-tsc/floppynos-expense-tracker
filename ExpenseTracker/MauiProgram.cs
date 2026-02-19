@@ -33,6 +33,11 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 fonts.AddFont("SegoeUI-Semibold.ttf", "SegoeSemibold");
                 fonts.AddFont("FluentSystemIcons-Regular.ttf", FluentUi.fontFamily);
+                fonts.AddFont("SpaceGrotesk-Regular.ttf", "SpaceGrotesk");
+                fonts.AddFont("SpaceGrotesk-SemiBold.ttf", "SpaceGrotesk-SemiBold");
+                fonts.AddFont("SpaceGrotesk-Bold.ttf", "SpaceGrotesk-Bold");
+                fonts.AddFont("JetBrainsMono-Regular.ttf", "JetBrainsMono");
+                fonts.AddFont("JetBrainsMono-Bold.ttf", "JetBrainsMono-Bold");
             });
 
         // Enable console logging (so you can see logs in the terminal) and set minimum level to Debug for the POC.

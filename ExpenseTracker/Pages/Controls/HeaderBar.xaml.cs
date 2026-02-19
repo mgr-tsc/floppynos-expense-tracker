@@ -6,9 +6,7 @@ public partial class HeaderBar : ContentView
     {
         InitializeComponent();
     }
-    
-    // Example on how to create a bindable property for a control.
-    // This allows us to set the UserName property from XAML when using the HeaderBar control.
+
     #region Bindables
 
     public string UserName
@@ -22,6 +20,18 @@ public partial class HeaderBar : ContentView
         typeof(string),
         typeof(HeaderBar),
         defaultValue: string.Empty);
+
+    public string UserInitials
+    {
+        get => (string)GetValue(UserInitialsProperty);
+        set => SetValue(UserInitialsProperty, value);
+    }
+
+    public static readonly BindableProperty UserInitialsProperty = BindableProperty.Create(
+        nameof(UserInitials),
+        typeof(string),
+        typeof(HeaderBar),
+        defaultValue: string.Empty);
+
     #endregion
-    
 }

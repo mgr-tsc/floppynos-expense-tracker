@@ -88,8 +88,8 @@ public class HouseholdRepository
     public async Task<HouseHoldDto?> GetByCodeAsync(long code)
     {
         var result = await _supabase.Client!.From<HouseHoldDto>()
-            .Filter("code", Constants.Operator.Equals, code)
-            .Filter("enabled", Constants.Operator.Equals, true)
+            .Filter(x => x.Code, Constants.Operator.Equals, code.ToString())
+            .Filter(x => x.Enabled, Constants.Operator.Equals, true.ToString())
             .Get();
         return result.Models.FirstOrDefault();
     }

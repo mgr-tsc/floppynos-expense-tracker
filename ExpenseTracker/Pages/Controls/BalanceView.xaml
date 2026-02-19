@@ -5,30 +5,41 @@
     xmlns:models="clr-namespace:ExpenseTracker.Models"
     x:Class="ExpenseTracker.Pages.Controls.BalanceView"
     x:DataType="models:BalanceData"
-    Style="{StaticResource CardStyle}">
+    Style="{StaticResource DarkCard}"
+    Padding="0">
 
-    <VerticalStackLayout Spacing="8">
-        <Label Text="Balance"
-               Style="{StaticResource Title2}"
-               SemanticProperties.HeadingLevel="Level2" />
+    <Grid ColumnDefinitions="3,*">
 
-        <Label Text="{Binding Summary}"
-               Style="{StaticResource Title3}"
-               TextColor="{StaticResource Primary}" />
+        <!-- Gold left accent stripe -->
+        <BoxView Grid.Column="0"
+                 BackgroundColor="{StaticResource GoldAccent}" />
 
-        <Grid ColumnDefinitions="*,*" Margin="0,8,0,0">
-            <VerticalStackLayout Grid.Column="0" Spacing="4">
-                <Label Text="{Binding PersonA.Name, StringFormat='{0} owes'}"
-                       Style="{StaticResource Caption1}" />
-                <Label Text="{Binding PersonAOwes, StringFormat='{0:C2}'}"
-                       Style="{StaticResource Body1Strong}" />
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="1" Spacing="4">
-                <Label Text="{Binding PersonB.Name, StringFormat='{0} owes'}"
-                       Style="{StaticResource Caption1}" />
-                <Label Text="{Binding PersonBOwes, StringFormat='{0:C2}'}"
-                       Style="{StaticResource Body1Strong}" />
-            </VerticalStackLayout>
-        </Grid>
-    </VerticalStackLayout>
+        <!-- Content area -->
+        <VerticalStackLayout Grid.Column="1" Spacing="8" Padding="16,18">
+
+            <Label Text="Your Balance"
+                   Style="{StaticResource SectionLabelStyle}" />
+
+            <Label Text="{Binding TotalOwed}"
+                   Style="{StaticResource HeroAmountStyle}" />
+
+            <Grid ColumnDefinitions="*,*" Margin="0,8,0,0">
+                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                    <Label Text="{Binding PersonA.Name, StringFormat='{0} owes'}"
+                           Style="{StaticResource Caption1}"
+                           TextColor="{StaticResource DimmedText}" />
+                    <Label Text="{Binding PersonAOwes, StringFormat='{0:C2}'}"
+                           Style="{StaticResource Body1Strong}" />
+                </VerticalStackLayout>
+                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                    <Label Text="{Binding PersonB.Name, StringFormat='{0} owes'}"
+                           Style="{StaticResource Caption1}"
+                           TextColor="{StaticResource DimmedText}" />
+                    <Label Text="{Binding PersonBOwes, StringFormat='{0:C2}'}"
+                           Style="{StaticResource Body1Strong}" />
+                </VerticalStackLayout>
+            </Grid>
+
+        </VerticalStackLayout>
+    </Grid>
 </Border>

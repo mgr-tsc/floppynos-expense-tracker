@@ -5,29 +5,34 @@
              x:Class="ExpenseTracker.Pages.Controls.HeaderBar">
 
     <Grid x:Name="HeaderBarLayout"
-          ColumnDefinitions="*,Auto,*"
-          Padding="16,8"
+          ColumnDefinitions="*,Auto"
+          Padding="0,8"
           VerticalOptions="Center">
 
-        <Label Grid.Column="1"
+        <Label Grid.Column="0"
                Text="{Binding UserName}"
-               FontSize="18"
+               FontSize="28"
+               FontFamily="SpaceGrotesk-Bold"
                FontAttributes="Bold"
-               HorizontalOptions="Center"
+               TextColor="White"
                VerticalOptions="Center" />
 
-        <Border Grid.Column="2"
-                WidthRequest="36"
-                HeightRequest="36"
+        <Border Grid.Column="1"
+                WidthRequest="44"
+                HeightRequest="44"
                 HorizontalOptions="End"
                 VerticalOptions="Center"
                 StrokeThickness="0"
-                BackgroundColor="{AppThemeBinding Light=#E6E6E6, Dark=#2E2E2E}">
+                Background="{StaticResource GoldAccent}">
             <Border.StrokeShape>
-                <RoundRectangle CornerRadius="18" />
+                <RoundRectangle CornerRadius="999" />
             </Border.StrokeShape>
-            <Image Source="user_profile.png"
-                   Aspect="AspectFill" />
+            <Label Text="{Binding UserInitials}"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource AppBackground}"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
         </Border>
     </Grid>
 

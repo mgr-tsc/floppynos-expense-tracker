@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:fonts="clr-namespace:ExpenseTracker.Resources.Fonts"
+             x:Class="ExpenseTracker.Pages.Controls.CustomTabBar">
+
+    <Border x:Name="TabBarBorder"
+            Background="{StaticResource CardSurface}"
+            Stroke="{StaticResource StrokeColor}"
+            StrokeThickness="1"
+            Margin="28,0,28,24"
+            VerticalOptions="Center">
+        <Border.HeightRequest>
+            <OnIdiom x:TypeArguments="x:Double">
+                <OnIdiom.Desktop>100</OnIdiom.Desktop>
+                <OnIdiom.Tablet>80</OnIdiom.Tablet>
+                <OnIdiom.Phone>80</OnIdiom.Phone>
+            </OnIdiom>
+        </Border.HeightRequest>
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="36" />
+        </Border.StrokeShape>
+
+        <Grid ColumnDefinitions="*,*,*" Padding="4,5">
+
+            <!-- Tab 0: HOME (active by default) -->
+            <Border x:Name="Tab0Pill"
+                    Grid.Column="0"
+                    Background="{StaticResource GoldAccent}"
+                    StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="26" />
+                </Border.StrokeShape>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Start" Spacing="0">
+                    <Label x:Name="Tab0Icon"
+                           Text="{x:Static fonts:FluentUi.diagram_24_regular}"
+                           FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                           FontSize="18"
+                           TextColor="{StaticResource AppBackground}"
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Start"/>
+                    <Label x:Name="Tab0Label"
+                           Text="HOME"
+                           Style="{StaticResource TabLabelStyle}"
+                           TextColor="{StaticResource AppBackground}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="End"/>
+                </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnHomeTabTapped" />
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Tab 1: CARDS -->
+            <Border x:Name="Tab1Pill"
+                    Grid.Column="1"
+                    Background="Transparent"
+                    StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="26" />
+                </Border.StrokeShape>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Start" Spacing="1">
+                    <Label x:Name="Tab1Icon"
+                           Text="{x:Static fonts:FluentUi.wallet_credit_card_24_regular}"
+                           FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                           FontSize="18"
+                           TextColor="{StaticResource MutedText}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Start"/>
+                    <Label x:Name="Tab1Label"
+                           Text="CARDS"
+                           Style="{StaticResource TabLabelStyle}"
+                           TextColor="{StaticResource MutedText}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="End"/>
+                </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCardsTabTapped" />
+                </Border.GestureRecognizers>
+            </Border>
+
+            <!-- Tab 2: SETTINGS -->
+            <Border x:Name="Tab2Pill"
+                    Grid.Column="2"
+                    Background="Transparent"
+                    StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="26" />
+                </Border.StrokeShape>
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Start" Spacing="1">
+                    <Label x:Name="Tab2Icon"
+                           Text="{x:Static fonts:FluentUi.settings_24_regular}"
+                           FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                           FontSize="18"
+                           TextColor="{StaticResource MutedText}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Start"/>
+                    <Label x:Name="Tab2Label"
+                           Text="SETTINGS"
+                           Style="{StaticResource TabLabelStyle}"
+                           TextColor="{StaticResource MutedText}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="End"/>
+                </VerticalStackLayout>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnSettingsTabTapped" />
+                </Border.GestureRecognizers>
+            </Border>
+
+        </Grid>
+    </Border>
+
+</ContentView>
