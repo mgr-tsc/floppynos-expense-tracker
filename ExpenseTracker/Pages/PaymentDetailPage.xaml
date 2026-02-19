@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
+             xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="ExpenseTracker.Pages.PaymentDetailPage"
+             x:DataType="pageModels:PaymentDetailPageModel"
+             Title="Payment">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <toolkit:IsNotNullConverter x:Key="IsNotNullConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <ScrollView IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
+            <VerticalStackLayout Padding="{StaticResource LayoutPadding}" Spacing="{StaticResource LayoutSpacing}">
+
+                <!-- Error message -->
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="Red"
+                       IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullConverter}}"
+                       Style="{StaticResource Caption1}" />
+
+                <sf:SfTextInputLayout Hint="Amount">
+                    <Entry Text="{Binding Amount}"
+                           Keyboard="Numeric"
+                           SemanticProperties.Description="Payment amount" />
+                </sf:SfTextInputLayout>
+
+                <sf:SfTextInputLayout Hint="Date">
+                    <DatePicker Date="{Binding Date}"
+                                SemanticProperties.Description="Payment date" />
+                </sf:SfTextInputLayout>
+
+                <!-- Payment Method Picker (plain Label + Picker) -->
+                <Label Text="Payment Method"
+                       Style="{StaticResource Caption1}"
+                       Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding PaymentMethods}"
+                        SelectedIndex="{Binding SelectedMethodIndex}"
+                        Title="Select payment method"
+                        SemanticProperties.Description="Payment method" />
+
+                <!-- Save button (new payments only) -->
+                <Button Text="Save"
+                    MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
+                    Command="{Binding SaveCommand}"
+                    IsVisible="{Binding IsExisting, Converter={StaticResource InvertedBoolConverter}}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+
+                <!-- Approve/Reject buttons (partner's pending payments only) -->
+                <HorizontalStackLayout Spacing="12"
+                    HorizontalOptions="Fill"
+                    IsVisible="{Binding CanApprove}">
+                    <Button Text="Approve"
+                        BackgroundColor="Green"
+                        TextColor="White"
+                        HorizontalOptions="FillAndExpand"
+                        MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
+                        Command="{Binding ApproveCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                    <Button Text="Reject"
+                        BackgroundColor="Red"
+                        TextColor="White"
+                        HorizontalOptions="FillAndExpand"
+                        MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
+                        Command="{Binding RejectCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <ActivityIndicator IsRunning="{Binding IsBusy}"
+                           IsVisible="{Binding IsBusy}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+    </Grid>
+</ContentPage>

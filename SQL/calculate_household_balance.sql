@@ -58,6 +58,7 @@ BEGIN
         LEFT JOIN (
             SELECT charge_id_fk, SUM(amount) AS total_paid
             FROM "PAYMENT"
+            WHERE status = 'approved'
             GROUP BY charge_id_fk
         ) pay ON pay.charge_id_fk = c.id
         WHERE c.household_id_fk = p_household_id

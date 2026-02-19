@@ -17,9 +17,17 @@ public class PaymentRepository
 
     public async Task<List<PaymentDto>> ListAsync()
     {
-        // Include the related Charge record
         var result = await _supabase.Client!.From<PaymentDto>()
-            .Select("*, CHARGE(*)")
+            .Select("*")
+            .Get();
+        return result.Models;
+    }
+
+    public async Task<List<PaymentDto>> ListByHouseholdAsync(long householdId)
+    {
+        var result = await _supabase.Client!.From<PaymentDto>()
+            .Select("*")
+            .Where(x => x.HouseholdIdFk == householdId)
             .Get();
         return result.Models;
     }
@@ -27,7 +35,7 @@ public class PaymentRepository
     public async Task<PaymentDto?> GetAsync(long id)
     {
         return await _supabase.Client!.From<PaymentDto>()
-            .Select("*, CHARGE(*)")
+            .Select("*")
             .Where(x => x.Id == id)
             .Single();
     }

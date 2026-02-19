@@ -7,6 +7,7 @@
              xmlns:pullToRefresh="clr-namespace:Syncfusion.Maui.Toolkit.PullToRefresh;assembly=Syncfusion.Maui.Toolkit"
              xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:fonts="clr-namespace:ExpenseTracker.Resources.Fonts"
              x:Class="ExpenseTracker.Pages.MainPage"
              x:DataType="pageModels:MainPageModel"
              x:Name="OverviewPage"
@@ -78,11 +79,28 @@
                 </pullToRefresh:SfPullToRefresh.PullableContent>
             </pullToRefresh:SfPullToRefresh>
 
-            <controls:AddButton
-                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-                Command="{Binding AddExpenseCommand}"
-                Margin="30,30,30,110"
-                SemanticProperties.Description="Add expense" />
+            <VerticalStackLayout VerticalOptions="End" HorizontalOptions="End" Spacing="12" Margin="30">
+                <Button
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    Command="{Binding AddPaymentCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    CornerRadius="30"
+                    HeightRequest="60"
+                    WidthRequest="60"
+                    SemanticProperties.Description="Add payment">
+                    <Button.ImageSource>
+                        <FontImageSource Glyph="{x:Static fonts:FluentUi.money_20_regular}"
+                                         FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                         Size="24"
+                                         Color="White" />
+                    </Button.ImageSource>
+                </Button>
+                <controls:AddButton
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    Command="{Binding AddExpenseCommand}"
+                    Margin="0"
+                    SemanticProperties.Description="Add expense" />
+            </VerticalStackLayout>
         </Grid>
     </Grid>
 </ContentPage>

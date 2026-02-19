@@ -75,6 +75,9 @@ public partial class MainPageModel : ObservableObject
     private Task AddExpense() => Shell.Current.GoToAsync("expense");
 
     [RelayCommand]
+    private Task AddPayment() => Shell.Current.GoToAsync("payment");
+
+    [RelayCommand]
     private Task NavigateToExpense(ChargeDto charge) => Shell.Current.GoToAsync($"expense?id={charge.Id}");
 
     [RelayCommand]

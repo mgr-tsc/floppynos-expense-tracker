@@ -1,0 +1,249 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using ExpenseTracker.Models.Supabase;
+using Microsoft.Extensions.Logging;
+
+namespace ExpenseTracker.PageModels;
+
+public partial class PaymentDetailPageModel : ObservableObject, IQueryAttributable
+{
+    private PaymentDto? _payment;
+    private long _householdId;
+
+    private readonly PaymentRepository _paymentRepository;
+    private readonly HouseholdRepository _householdRepository;
+    private readonly SupabaseService _supabaseService;
+    private readonly ModalErrorHandler _errorHandler;
+    private readonly ILogger<PaymentDetailPageModel> _logger;
+
+    private static readonly string[] PaymentMethodDisplayNames = ["Cash", "Check", "PayPal", "Zelle", "Apple Pay"];
+    private static readonly string[] PaymentMethodDbValues = ["cash", "check", "transfer_paypal", "transfer_zelle", "transfer_applepay"];
+
+    [ObservableProperty]
+    private decimal _amount;
+
+    [ObservableProperty]
+    private DateTime _date = DateTime.Today;
+
+    [ObservableProperty]
+    private int _selectedMethodIndex;
+
+    [ObservableProperty]
+    private List<string> _paymentMethods = [.. PaymentMethodDisplayNames];
+
+    [ObservableProperty]
+    private bool _isBusy;
+
+    [ObservableProperty]
+    private string _errorMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool _isExisting;
+
+    [ObservableProperty]
+    private bool _canApprove;
+
+    public PaymentDetailPageModel(
+        PaymentRepository paymentRepository,
+        HouseholdRepository householdRepository,
+        SupabaseService supabaseService,
+        ModalErrorHandler errorHandler,
+        ILogger<PaymentDetailPageModel> logger)
+    {
+        _paymentRepository = paymentRepository;
+        _householdRepository = householdRepository;
+        _supabaseService = supabaseService;
+        _errorHandler = errorHandler;
+        _logger = logger;
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("id", out var idValue) && long.TryParse(idValue?.ToString(), out var paymentId) && paymentId > 0)
+        {
+            _logger.LogInformation("Loading existing payment {Id}", paymentId);
+            LoadExistingPayment(paymentId).FireAndForgetSafeAsync(_errorHandler);
+        }
+        else
+        {
+            _payment = new PaymentDto();
+            IsExisting = false;
+            CanApprove = false;
+            _logger.LogInformation("Creating new payment");
+            LoadFormData().FireAndForgetSafeAsync(_errorHandler);
+        }
+    }
+
+    private async Task LoadExistingPayment(long paymentId)
+    {
+        try
+        {
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+
+            _payment = await _paymentRepository.GetAsync(paymentId);
+            if (_payment is null)
+            {
+                ErrorMessage = "Payment not found";
+                return;
+            }
+
+            IsExisting = true;
+
+            // Populate form fields
+            Amount = _payment.Amount;
+            Date = _payment.PaymentDate ?? DateTime.Today;
+            SelectedMethodIndex = Array.IndexOf(PaymentMethodDbValues, _payment.PaymentMethod);
+            if (SelectedMethodIndex < 0) SelectedMethodIndex = 0;
+
+            // Determine if current user can approve
+            var currentUserId = _supabaseService.GetCurrentUserId();
+            CanApprove = !string.IsNullOrEmpty(currentUserId)
+                         && !_payment.IsOwnPayment(currentUserId)
+                         && _payment.Status?.ToLower() == "pending";
+
+            _logger.LogInformation("Loaded payment {Id}, CanApprove={CanApprove}", paymentId, CanApprove);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to load payment {Id}", paymentId);
+            ErrorMessage = "Failed to load payment";
+            _errorHandler.HandleError(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task LoadFormData()
+    {
+        try
+        {
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+
+            var userId = _supabaseService.GetCurrentUserId();
+            if (string.IsNullOrEmpty(userId))
+            {
+                ErrorMessage = "No authenticated user";
+                return;
+            }
+
+            var household = await _householdRepository.GetByUserIdAsync(userId);
+            if (household is null)
+            {
+                ErrorMessage = "No household found. Please join or create one first.";
+                return;
+            }
+            _householdId = household.Id;
+
+            _logger.LogInformation("Payment form loaded, Household: {Id}", _householdId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to load payment form data");
+            _errorHandler.HandleError(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task Approve()
+    {
+        if (_payment is null) return;
+
+        try
+        {
+            IsBusy = true;
+            _payment.Status = "approved";
+            await _paymentRepository.SaveAsync(_payment);
+            await Shell.Current.GoToAsync("..");
+            await AppShell.DisplayToastAsync("Payment approved");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to approve payment");
+            ErrorMessage = "Failed to approve payment";
+            _errorHandler.HandleError(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task Reject()
+    {
+        if (_payment is null) return;
+
+        try
+        {
+            IsBusy = true;
+            _payment.Status = "rejected";
+            await _paymentRepository.SaveAsync(_payment);
+            await Shell.Current.GoToAsync("..");
+            await AppShell.DisplayToastAsync("Payment rejected");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to reject payment");
+            ErrorMessage = "Failed to reject payment";
+            _errorHandler.HandleError(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task Save()
+    {
+        if (Amount <= 0)
+        {
+            ErrorMessage = "Please enter a valid amount";
+            return;
+        }
+
+        if (_payment is null)
+        {
+            ErrorMessage = "Payment data is missing";
+            return;
+        }
+
+        try
+        {
+            IsBusy = true;
+            ErrorMessage = string.Empty;
+
+            _payment.Amount = Amount;
+            _payment.PaymentDate = Date;
+            _payment.PaymentMethod = PaymentMethodDbValues[SelectedMethodIndex];
+            _payment.UserIdFk = _supabaseService.GetCurrentUserId()!;
+            _payment.HouseholdIdFk = _householdId;
+
+            _logger.LogInformation("Saving payment: Amount={Amount}, Method={Method}, Household={HouseholdId}",
+                Amount, _payment.PaymentMethod, _householdId);
+
+            await _paymentRepository.SaveAsync(_payment);
+
+            await Shell.Current.GoToAsync("..");
+            await AppShell.DisplayToastAsync("Payment saved");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to save payment");
+            ErrorMessage = "Failed to save payment. Please try again.";
+            _errorHandler.HandleError(ex);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+}
