@@ -2,57 +2,132 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
-             xmlns:models="clr-namespace:ExpenseTracker.Models"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:controls="clr-namespace:ExpenseTracker.Pages.Controls"
+             xmlns:fonts="clr-namespace:ExpenseTracker.Resources.Fonts"
              x:DataType="pageModels:ManageProfilesPageModel"
              x:Class="ExpenseTracker.Pages.ManageProfilesPage"
-             x:Name="ProfilesPage"
-             Title="Settings">
+             x:Name="SettingsPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource AppBackground}">
 
-    <ContentPage.Behaviors>
-        <toolkit:EventToCommandBehavior
-                BindingContext="{Binding Path=BindingContext, Source={x:Reference ProfilesPage}, x:DataType=ContentPage}"
-                EventName="Appearing"
-                Command="{Binding AppearingCommand}" />
-    </ContentPage.Behaviors>
+    <Grid>
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Reset App" Command="{Binding ResetCommand}" />
-    </ContentPage.ToolbarItems>
+        <ScrollView Padding="0,0,0,90">
+            <VerticalStackLayout Padding="28,40" Spacing="24">
 
-    <Grid RowDefinitions="*,Auto">
-        <!-- Main Content Area -->
-        <ScrollView Grid.Row="0">
-            <VerticalStackLayout Spacing="{StaticResource LayoutSpacing}" Padding="{StaticResource LayoutPadding}">
-                <Label Text="Profiles" Style="{StaticResource Title2}"
-                       SemanticProperties.HeadingLevel="Level1" />
-
-                <VerticalStackLayout Spacing="{StaticResource LayoutSpacing}"
-                    BindableLayout.ItemsSource="{Binding Profiles}">
-                    <!-- <BindableLayout.ItemTemplate> -->
-                    <!--     <DataTemplate x:DataType="models:Profile"> -->
-                    <!--         <Border> -->
-                    <!--             <Grid ColumnDefinitions="Auto,*" ColumnSpacing="15" Padding="5"> -->
-                    <!--                 <Label Text="Name" -->
-                    <!--                        Grid.Column="0" -->
-                    <!--                        VerticalOptions="Center" -->
-                    <!--                        Style="{StaticResource Body1Strong}" /> -->
-                    <!--                 <Entry Text="{Binding Name}" -->
-                    <!--                        Grid.Column="1" -->
-                    <!--                        SemanticProperties.Description="{Binding Name, StringFormat='{0} profile name'}" /> -->
-                    <!--             </Grid> -->
-                    <!--         </Border> -->
-                    <!--     </DataTemplate> -->
-                    <!-- </BindableLayout.ItemTemplate> -->
+                <!-- ═══════════ HEADER ═══════════ -->
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="ACCOUNT"
+                           Style="{StaticResource SectionLabelStyle}" />
+                    <Label Text="SETTINGS"
+                           FontSize="28"
+                           FontFamily="SpaceGrotesk-Bold"
+                           TextColor="White"
+                           CharacterSpacing="-1"
+                           LineHeight="0.95" />
                 </VerticalStackLayout>
 
-                <Button Text="Save Profiles"
-                        Command="{Binding SaveProfilesCommand}"
-                        MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
-                        Margin="0,10,0,20"
-                        SemanticProperties.Description="Save profile names" />
+                <!-- ═══════════ COMING SOON CARD ═══════════ -->
+                <Border Background="{StaticResource CardSurface}"
+                        Stroke="{StaticResource StrokeColor}"
+                        StrokeThickness="1"
+                        Padding="24,32">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <VerticalStackLayout Spacing="16" HorizontalOptions="Center">
+
+                        <!-- Icon -->
+                        <Border WidthRequest="72" HeightRequest="72"
+                                Background="{StaticResource ElevatedSurface}"
+                                Stroke="{StaticResource StrokeColor}"
+                                StrokeThickness="1"
+                                HorizontalOptions="Center">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="36" />
+                            </Border.StrokeShape>
+                            <Label Text="{x:Static fonts:FluentUi.settings_24_regular}"
+                                   FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                   FontSize="28"
+                                   TextColor="{StaticResource GoldAccent}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                        </Border>
+
+                        <!-- Title -->
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Label Text="COMING SOON"
+                                   Style="{StaticResource SectionLabelStyle}"
+                                   FontSize="12"
+                                   TextColor="{StaticResource GoldAccent}"
+                                   HorizontalOptions="Center" />
+                            <Label Text="Settings &amp; Profile"
+                                   FontSize="20"
+                                   FontFamily="SpaceGrotesk-Bold"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="Profile management, default household, and app preferences are on the way."
+                                   FontSize="13"
+                                   FontFamily="SpaceGrotesk"
+                                   TextColor="{StaticResource DimmedText}"
+                                   HorizontalOptions="Center"
+                                   HorizontalTextAlignment="Center"
+                                   LineHeight="1.45" />
+                        </VerticalStackLayout>
+
+                        <!-- Feature preview pills -->
+                        <FlexLayout Wrap="Wrap"
+                                    JustifyContent="Center"
+                                    AlignItems="Center">
+                            <Border Background="{StaticResource ElevatedSurface}"
+                                    Stroke="{StaticResource StrokeColor}"
+                                    StrokeThickness="1"
+                                    Padding="12,6">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="999" />
+                                </Border.StrokeShape>
+                                <Label Text="Profile Avatar"
+                                       FontSize="11"
+                                       FontFamily="SpaceGrotesk"
+                                       TextColor="{StaticResource DimmedText}" />
+                            </Border>
+                            <Border Background="{StaticResource ElevatedSurface}"
+                                    Stroke="{StaticResource StrokeColor}"
+                                    StrokeThickness="1"
+                                    Padding="12,6">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="999" />
+                                </Border.StrokeShape>
+                                <Label Text="Default Household"
+                                       FontSize="11"
+                                       FontFamily="SpaceGrotesk"
+                                       TextColor="{StaticResource DimmedText}" />
+                            </Border>
+                            <Border Background="{StaticResource ElevatedSurface}"
+                                    Stroke="{StaticResource StrokeColor}"
+                                    StrokeThickness="1"
+                                    Padding="12,6">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="999" />
+                                </Border.StrokeShape>
+                                <Label Text="Preferences"
+                                       FontSize="11"
+                                       FontFamily="SpaceGrotesk"
+                                       TextColor="{StaticResource DimmedText}" />
+                            </Border>
+                        </FlexLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
             </VerticalStackLayout>
         </ScrollView>
+
+        <!-- Floating tab bar overlay -->
+        <controls:CustomTabBar xmlns:controls="clr-namespace:ExpenseTracker.Pages.Controls"
+                               VerticalOptions="End"
+                               ActiveTabIndex="2" />
+
     </Grid>
+
 </ContentPage>

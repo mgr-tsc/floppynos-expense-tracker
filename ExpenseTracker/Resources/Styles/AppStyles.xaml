@@ -200,6 +200,8 @@
                 Value="{OnPlatform WinUI=SegoeSemibold, iOS=.SFUI-SemiBold, MacCatalyst=.SFUI-SemiBold, Default=''}" />
         <Setter Property="FontAttributes"
                 Value="{OnPlatform Default=None, Android=Bold}" />
+        <!-- Always white — this app uses a forced dark theme on all platforms -->
+        <Setter Property="TextColor" Value="White" />
     </Style>
     <Style x:Key="Title3"
            TargetType="Label">

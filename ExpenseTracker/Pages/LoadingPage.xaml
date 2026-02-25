@@ -3,12 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:fonts="clr-namespace:ExpenseTracker.Resources.Fonts"
              x:Class="ExpenseTracker.Pages.LoadingPage"
              x:DataType="pageModels:LoadingPageModel"
              x:Name="LoadPage"
              Shell.NavBarIsVisible="False"
              Shell.FlyoutItemIsVisible="False"
-             Title="Loading">
+             BackgroundColor="{StaticResource AppBackground}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
@@ -17,13 +18,84 @@
                 Command="{Binding AppearingCommand}" />
     </ContentPage.Behaviors>
 
-    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
-        <Label Text="Floppyno's expense Tracker"
-               Style="{StaticResource LargeTitle}"
-               HorizontalOptions="Center" />
-        <ActivityIndicator IsRunning="True"
-                           Color="{StaticResource Primary}"
-                           HeightRequest="50"
-                           WidthRequest="50" />
-    </VerticalStackLayout>
+    <Grid RowDefinitions="*,Auto" Padding="28,48,28,24">
+
+        <!-- ═══════════ MAIN BLOCK ═══════════ -->
+        <VerticalStackLayout Grid.Row="0"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             Spacing="18">
+
+            <!-- Eyebrow -->
+            <Label Text="INITIALIZING"
+                   Style="{StaticResource SectionLabelStyle}"
+                   HorizontalOptions="Center" />
+
+            <!-- Title -->
+            <Label Text="FLOPPYNO'S EXPENSE TRACKER"
+                   FontSize="28"
+                   FontFamily="SpaceGrotesk-Bold"
+                   TextColor="White"
+                   CharacterSpacing="-0.6"
+                   LineHeight="0.98"
+                   HorizontalTextAlignment="Center" />
+
+            <!-- Subtitle -->
+            <Label Text="Preparing your workspace and syncing balances..."
+                   FontSize="13"
+                   FontFamily="SpaceGrotesk"
+                   TextColor="{StaticResource DimmedText}"
+                   LineHeight="1.45"
+                   HorizontalTextAlignment="Center" />
+
+            <!-- Spinner shell -->
+            <Border WidthRequest="90" HeightRequest="90"
+                    Background="{StaticResource CardSurface}"
+                    Stroke="{StaticResource StrokeColor}"
+                    StrokeThickness="1"
+                    HorizontalOptions="Center">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="45" />
+                </Border.StrokeShape>
+                <ActivityIndicator IsRunning="True"
+                                   Color="{StaticResource GoldAccent}"
+                                   WidthRequest="40"
+                                   HeightRequest="40"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+            </Border>
+
+            <!-- Dots row -->
+            <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                <BoxView WidthRequest="7" HeightRequest="7"
+                         CornerRadius="4"
+                         Color="{StaticResource GoldAccent}" />
+                <BoxView WidthRequest="7" HeightRequest="7"
+                         CornerRadius="4"
+                         Color="#555555" />
+                <BoxView WidthRequest="7" HeightRequest="7"
+                         CornerRadius="4"
+                         Color="#555555" />
+            </HorizontalStackLayout>
+
+        </VerticalStackLayout>
+
+        <!-- ═══════════ FOOTER ═══════════ -->
+        <VerticalStackLayout Grid.Row="1"
+                             HorizontalOptions="Center"
+                             Spacing="6">
+            <Label Text="Powered by Keepersoft"
+                   FontSize="11"
+                   FontFamily="SpaceGrotesk"
+                   TextColor="#808080"
+                   HorizontalOptions="Center" />
+            <Label Text="© 2026 Keepersoft. All rights reserved."
+                   FontSize="9"
+                   FontFamily="SpaceGrotesk"
+                   TextColor="{StaticResource MutedText}"
+                   HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+    </Grid>
+
 </ContentPage>

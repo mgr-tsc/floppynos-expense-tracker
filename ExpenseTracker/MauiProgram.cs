@@ -87,9 +87,8 @@ public static class MauiProgram
 
         builder.Services.AddTransientWithShellRoute<ExpenseDetailPage, ExpenseDetailPageModel>("expense");
         builder.Services.AddTransientWithShellRoute<PaymentDetailPage, PaymentDetailPageModel>("payment");
-        builder.Services.AddTransientWithShellRoute<CreateHouseholdPage, CreateHouseholdPageModel>("createhousehold");
-        builder.Services.AddTransientWithShellRoute<JoinHouseholdPage, JoinHouseholdPageModel>("joinhousehold");
         // CardDetailPage is now the "cards" tab singleton — no longer a transient shell route
+        // HouseholdSetupPage is now a single merged page (join + create) — no separate routes needed
 
         return builder.Build();
     }

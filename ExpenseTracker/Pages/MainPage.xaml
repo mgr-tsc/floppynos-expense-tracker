@@ -78,6 +78,8 @@
                                            VerticalOptions="Center" />
                                     <Label Text="Charges"
                                            Style="{StaticResource SectionLabelStyle}"
+                                           FontSize="13"
+                                           TextColor="{StaticResource DimmedText}"
                                            VerticalOptions="Center" />
                                 </HorizontalStackLayout>
                                 <Button Grid.Column="1"
@@ -160,6 +162,8 @@
                                            VerticalOptions="Center" />
                                     <Label Text="Payments"
                                            Style="{StaticResource SectionLabelStyle}"
+                                           FontSize="13"
+                                           TextColor="{StaticResource DimmedText}"
                                            VerticalOptions="Center" />
                                 </HorizontalStackLayout>
                                 <Button Grid.Column="1"
