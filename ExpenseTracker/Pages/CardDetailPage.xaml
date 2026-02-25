@@ -2,11 +2,21 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
-             xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
+             xmlns:models="clr-namespace:ExpenseTracker.Models.Supabase"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:fonts="clr-namespace:ExpenseTracker.Resources.Fonts"
              x:Class="ExpenseTracker.Pages.CardDetailPage"
              x:DataType="pageModels:CardDetailPageModel"
-             Title="Card">
+             x:Name="CardPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource AppBackground}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference CardPage}, x:DataType=ContentPage}"
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -15,63 +25,301 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <ContentPage.ToolbarItems>
-        <ToolbarItem
-            Text="Delete"
-            Command="{Binding DeleteCommand}"
-            Order="Primary"
-            Priority="0"
-            IconImageSource="{StaticResource IconDelete}"
-            SemanticProperties.Description="Delete Card" />
-    </ContentPage.ToolbarItems>
-
     <ScrollView>
-        <VerticalStackLayout Padding="{StaticResource LayoutPadding}"
-                             Spacing="{StaticResource LayoutSpacing}">
+        <VerticalStackLayout Padding="28,8,28,36" Spacing="28">
 
-            <!-- CARD NAME -->
-            <sf:SfTextInputLayout Hint="Card Name">
-                <Entry Text="{Binding Name}"
-                       Placeholder="e.g., Chase Sapphire"
-                       SemanticProperties.Description="Card name or alias" />
-            </sf:SfTextInputLayout>
+            <!-- ═══════════ HEADER ═══════════ -->
+            <Grid ColumnDefinitions="Auto,*" Padding="0,16,0,4">
 
-            <!-- CARD NETWORK -->
-            <VerticalStackLayout Spacing="4">
-                <Label Text="Network"
-                       Style="{StaticResource Caption1}" />
-                <Picker ItemsSource="{Binding CardNetworks}"
-                        SelectedIndex="{Binding SelectedNetworkIndex}"
-                        Title="Select network"
-                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
-                        SemanticProperties.Description="Card network (Visa, MasterCard, etc.)" />
+                <Border Grid.Column="0"
+                        WidthRequest="40" HeightRequest="40"
+                        Background="{StaticResource CardSurface}"
+                        Stroke="{StaticResource StrokeColor}"
+                        StrokeThickness="1">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20" />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBackTapped" />
+                    </Border.GestureRecognizers>
+                    <Label Text="{x:Static fonts:FluentUi.arrow_left_24_regular}"
+                           FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                           FontSize="18"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+
+                <VerticalStackLayout Grid.Column="1" Margin="16,0,0,0" VerticalOptions="Center" Spacing="2">
+                    <Label Text="ACCOUNT" Style="{StaticResource SectionLabelStyle}" />
+                    <Label Text="{Binding PageTitle}"
+                           FontSize="26"
+                           FontFamily="SpaceGrotesk-Bold"
+                           TextColor="White" />
+                </VerticalStackLayout>
+
+            </Grid>
+
+            <!-- ═══════════ YOUR CARDS (collapsible) ═══════════ -->
+            <VerticalStackLayout Spacing="14">
+
+                <!-- Section header — tappable to toggle -->
+                <Grid ColumnDefinitions="*,Auto">
+                    <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                        <HorizontalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ToggleCardsCommand}" />
+                        </HorizontalStackLayout.GestureRecognizers>
+                        <Label Text="{x:Static fonts:FluentUi.chevron_down_20_regular}"
+                               IsVisible="{Binding IsCardsExpanded}"
+                               FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                               FontSize="14"
+                               TextColor="{StaticResource MutedText}"
+                               VerticalOptions="Center" />
+                        <Label Text="{x:Static fonts:FluentUi.chevron_right_20_regular}"
+                               IsVisible="{Binding IsCardsExpanded, Converter={StaticResource InvertedBoolConverter}}"
+                               FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                               FontSize="14"
+                               TextColor="{StaticResource MutedText}"
+                               VerticalOptions="Center" />
+                        <Label Text="YOUR CARDS"
+                               Style="{StaticResource SectionLabelStyle}"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    <Label Grid.Column="1"
+                           Text="{Binding CardsCountText}"
+                           Style="{StaticResource SectionLabelStyle}"
+                           VerticalOptions="Center" />
+                </Grid>
+
+                <!-- Collapsible card list -->
+                <VerticalStackLayout IsVisible="{Binding IsCardsExpanded}" Spacing="10">
+
+                    <Label Text="No cards registered yet"
+                           IsVisible="{Binding IsCardsEmpty}"
+                           FontSize="13"
+                           FontFamily="SpaceGrotesk"
+                           TextColor="{StaticResource MutedText}"
+                           HorizontalOptions="Center"
+                           Margin="0,4" />
+
+                    <VerticalStackLayout Spacing="10"
+                        BindableLayout.ItemsSource="{Binding Cards}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:CardDto">
+                                <Border Style="{StaticResource DarkCard}" Padding="0">
+                                    <Grid ColumnDefinitions="4,*,Auto">
+
+                                        <BoxView Grid.Column="0"
+                                                 Color="{StaticResource GoldAccent}"
+                                                 HorizontalOptions="Fill"
+                                                 VerticalOptions="Fill" />
+
+                                        <VerticalStackLayout Grid.Column="1" Padding="14,12" Spacing="5">
+                                            <HorizontalStackLayout Spacing="8">
+                                                <Label Text="{Binding Name}"
+                                                       FontSize="13"
+                                                       FontFamily="SpaceGrotesk-SemiBold"
+                                                       TextColor="White"
+                                                       VerticalOptions="Center" />
+                                                <Border Background="{StaticResource ElevatedSurface}"
+                                                        StrokeThickness="0"
+                                                        Padding="6,3"
+                                                        VerticalOptions="Center">
+                                                    <Border.StrokeShape>
+                                                        <RoundRectangle CornerRadius="4" />
+                                                    </Border.StrokeShape>
+                                                    <Label Text="{Binding NetworkBadge}"
+                                                           FontSize="10"
+                                                           FontFamily="SpaceGrotesk-SemiBold"
+                                                           TextColor="{StaticResource GoldAccent}" />
+                                                </Border>
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding MaskedDigits}"
+                                                   FontSize="12"
+                                                   FontFamily="JetBrainsMono"
+                                                   TextColor="{StaticResource DimmedText}" />
+                                        </VerticalStackLayout>
+
+                                        <HorizontalStackLayout Grid.Column="2"
+                                                               Spacing="8" Padding="12,0"
+                                                               VerticalOptions="Center">
+                                            <!-- Edit -->
+                                            <Border WidthRequest="30" HeightRequest="30"
+                                                    Background="{StaticResource ElevatedSurface}"
+                                                    StrokeThickness="0">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="15" />
+                                                </Border.StrokeShape>
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                        Command="{Binding BindingContext.SelectCardForEditCommand, Source={x:Reference CardPage}}"
+                                                        CommandParameter="{Binding .}" />
+                                                </Border.GestureRecognizers>
+                                                <Label Text="{x:Static fonts:FluentUi.pen_20_regular}"
+                                                       FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                                       FontSize="14"
+                                                       TextColor="{StaticResource DimmedText}"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center" />
+                                            </Border>
+                                            <!-- Delete -->
+                                            <Border WidthRequest="30" HeightRequest="30"
+                                                    Background="{StaticResource ElevatedSurface}"
+                                                    StrokeThickness="0">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="15" />
+                                                </Border.StrokeShape>
+                                                <Border.GestureRecognizers>
+                                                    <TapGestureRecognizer
+                                                        Command="{Binding BindingContext.DeleteCardInListCommand, Source={x:Reference CardPage}}"
+                                                        CommandParameter="{Binding .}" />
+                                                </Border.GestureRecognizers>
+                                                <Label Text="{x:Static fonts:FluentUi.delete_20_regular}"
+                                                       FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                                       FontSize="14"
+                                                       TextColor="#E05555"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center" />
+                                            </Border>
+                                        </HorizontalStackLayout>
+
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+
             </VerticalStackLayout>
 
-            <!-- LAST 4 DIGITS -->
-            <sf:SfTextInputLayout Hint="Last 4 Digits">
-                <Entry Text="{Binding LastDigits}"
-                       MaxLength="4"
-                       Keyboard="Numeric"
-                       Placeholder="1234"
-                       SemanticProperties.Description="Last four digits" />
-            </sf:SfTextInputLayout>
+            <!-- ═══════════ ADD / EDIT FORM ═══════════ -->
+            <VerticalStackLayout Spacing="20">
 
-            <!-- ERROR MESSAGE -->
-            <Label Text="{Binding ErrorMessage}"
-                   TextColor="Red"
-                   IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullConverter}}"
-                   HorizontalOptions="Center" />
+                <!-- Form section header -->
+                <Grid ColumnDefinitions="3,*">
+                    <BoxView Grid.Column="0"
+                             WidthRequest="3" HeightRequest="18"
+                             Color="{StaticResource GoldAccent}"
+                             VerticalOptions="Center" />
+                    <Label Grid.Column="1"
+                           Text="{Binding PageTitle}"
+                           Style="{StaticResource SectionLabelStyle}"
+                           Margin="10,0,0,0"
+                           VerticalOptions="Center" />
+                </Grid>
 
-            <!-- SAVE BUTTON -->
-            <Button Text="Save"
-                    MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
-                    Command="{Binding SaveCommand}"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                <!-- Card Name -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="CARD NAME" Style="{StaticResource SectionLabelStyle}" />
+                    <Grid RowDefinitions="48,2" BackgroundColor="{StaticResource CardSurface}">
+                        <Entry Grid.Row="0"
+                               Text="{Binding Name}"
+                               BackgroundColor="Transparent"
+                               TextColor="White"
+                               PlaceholderColor="{StaticResource MutedText}"
+                               Placeholder="e.g., Chase Sapphire"
+                               FontFamily="SpaceGrotesk"
+                               FontSize="14"
+                               Margin="12,0" />
+                        <BoxView Grid.Row="1" Color="{StaticResource GoldAccent}" />
+                    </Grid>
+                </VerticalStackLayout>
 
-            <!-- LOADING INDICATOR -->
-            <ActivityIndicator IsRunning="{Binding IsBusy}"
-                               IsVisible="{Binding IsBusy}"
-                               HorizontalOptions="Center" />
+                <!-- Network Picker -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="NETWORK" Style="{StaticResource SectionLabelStyle}" />
+                    <Border Background="{StaticResource CardSurface}"
+                            Stroke="{StaticResource StrokeColor}"
+                            StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10" />
+                        </Border.StrokeShape>
+                        <Picker ItemsSource="{Binding CardNetworks}"
+                                SelectedIndex="{Binding SelectedNetworkIndex}"
+                                Title="Select network"
+                                TitleColor="{StaticResource MutedText}"
+                                TextColor="White"
+                                BackgroundColor="Transparent"
+                                HeightRequest="48" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Last 4 Digits — single styled entry -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="LAST 4 DIGITS" Style="{StaticResource SectionLabelStyle}" />
+                    <Grid RowDefinitions="48,2" BackgroundColor="{StaticResource CardSurface}">
+                        <Entry Grid.Row="0"
+                               Text="{Binding LastDigits}"
+                               MaxLength="4"
+                               Keyboard="Numeric"
+                               BackgroundColor="Transparent"
+                               TextColor="White"
+                               PlaceholderColor="{StaticResource MutedText}"
+                               Placeholder="1234"
+                               FontFamily="JetBrainsMono-Bold"
+                               FontSize="20"
+                               HorizontalTextAlignment="Center"
+                               Margin="12,0" />
+                        <BoxView Grid.Row="1" Color="{StaticResource GoldAccent}" />
+                    </Grid>
+                </VerticalStackLayout>
+
+                <!-- Security note -->
+                <HorizontalStackLayout Spacing="8">
+                    <Label Text="{x:Static fonts:FluentUi.lock_closed_20_regular}"
+                           FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                           FontSize="14"
+                           TextColor="{StaticResource MutedText}"
+                           VerticalOptions="Center" />
+                    <Label Text="Your card details are stored securely in your account"
+                           FontSize="11"
+                           FontFamily="SpaceGrotesk"
+                           TextColor="{StaticResource MutedText}"
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <!-- Error message -->
+                <Label Text="{Binding ErrorMessage}"
+                       TextColor="#E05555"
+                       FontSize="12"
+                       FontFamily="SpaceGrotesk"
+                       IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullConverter}}"
+                       HorizontalOptions="Center" />
+
+                <!-- REGISTER CARD button -->
+                <Button Text="REGISTER CARD"
+                        HeightRequest="56"
+                        Command="{Binding SaveCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                        BackgroundColor="{StaticResource GoldAccent}"
+                        TextColor="{StaticResource AppBackground}"
+                        FontFamily="SpaceGrotesk-SemiBold"
+                        FontSize="13"
+                        CharacterSpacing="1"
+                        CornerRadius="16" />
+
+                <!-- CANCEL button -->
+                <Button Text="CANCEL"
+                        HeightRequest="44"
+                        Command="{Binding CancelCommand}"
+                        BackgroundColor="Transparent"
+                        BorderColor="{StaticResource StrokeColor}"
+                        BorderWidth="1"
+                        TextColor="{StaticResource MutedText}"
+                        FontFamily="SpaceGrotesk"
+                        FontSize="13"
+                        CornerRadius="16" />
+
+                <!-- Loading indicator -->
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                                   IsVisible="{Binding IsBusy}"
+                                   Color="{StaticResource GoldAccent}"
+                                   HorizontalOptions="Center" />
+
+            </VerticalStackLayout>
+
         </VerticalStackLayout>
     </ScrollView>
+
 </ContentPage>

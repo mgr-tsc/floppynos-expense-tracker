@@ -2,11 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
-             xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:fonts="clr-namespace:ExpenseTracker.Resources.Fonts"
              x:Class="ExpenseTracker.Pages.PaymentDetailPage"
              x:DataType="pageModels:PaymentDetailPageModel"
-             Title="Payment">
+             x:Name="PaymentPage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource AppBackground}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -16,67 +18,205 @@
     </ContentPage.Resources>
 
     <Grid>
+
         <ScrollView IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
-            <VerticalStackLayout Padding="{StaticResource LayoutPadding}" Spacing="{StaticResource LayoutSpacing}">
+            <VerticalStackLayout Padding="28,8,28,36" Spacing="28">
 
-                <!-- Error message -->
-                <Label Text="{Binding ErrorMessage}"
-                       TextColor="Red"
-                       IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullConverter}}"
-                       Style="{StaticResource Caption1}" />
+                <!-- ═══════════ HEADER ═══════════ -->
+                <Grid ColumnDefinitions="Auto,*" Padding="0,16,0,4">
 
-                <sf:SfTextInputLayout Hint="Amount">
-                    <Entry Text="{Binding Amount}"
-                           Keyboard="Numeric"
-                           SemanticProperties.Description="Payment amount" />
-                </sf:SfTextInputLayout>
+                    <Border Grid.Column="0"
+                            WidthRequest="40" HeightRequest="40"
+                            Background="{StaticResource CardSurface}"
+                            Stroke="{StaticResource StrokeColor}"
+                            StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="20" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnBackTapped" />
+                        </Border.GestureRecognizers>
+                        <Label Text="{x:Static fonts:FluentUi.arrow_left_24_regular}"
+                               FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                               FontSize="18"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </Border>
 
-                <sf:SfTextInputLayout Hint="Date">
-                    <DatePicker Date="{Binding Date}"
-                                SemanticProperties.Description="Payment date" />
-                </sf:SfTextInputLayout>
+                    <VerticalStackLayout Grid.Column="1" Margin="16,0,0,0" VerticalOptions="Center" Spacing="2">
+                        <Label Text="PAYMENT" Style="{StaticResource SectionLabelStyle}" />
+                        <Label Text="{Binding PageTitle}"
+                               FontSize="26"
+                               FontFamily="SpaceGrotesk-Bold"
+                               TextColor="White" />
+                    </VerticalStackLayout>
 
-                <!-- Payment Method Picker (plain Label + Picker) -->
-                <Label Text="Payment Method"
-                       Style="{StaticResource Caption1}"
-                       Margin="0,8,0,0" />
-                <Picker ItemsSource="{Binding PaymentMethods}"
-                        SelectedIndex="{Binding SelectedMethodIndex}"
-                        Title="Select payment method"
-                        SemanticProperties.Description="Payment method" />
+                </Grid>
 
-                <!-- Save button (new payments only) -->
-                <Button Text="Save"
-                    MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
-                    Command="{Binding SaveCommand}"
-                    IsVisible="{Binding IsExisting, Converter={StaticResource InvertedBoolConverter}}"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                <!-- ═══════════ FORM ═══════════ -->
+                <VerticalStackLayout Spacing="16">
 
-                <!-- Approve/Reject buttons (partner's pending payments only) -->
-                <HorizontalStackLayout Spacing="12"
-                    HorizontalOptions="Fill"
-                    IsVisible="{Binding CanApprove}">
-                    <Button Text="Approve"
-                        BackgroundColor="Green"
-                        TextColor="White"
-                        HorizontalOptions="FillAndExpand"
-                        MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
-                        Command="{Binding ApproveCommand}"
-                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
-                    <Button Text="Reject"
-                        BackgroundColor="Red"
-                        TextColor="White"
-                        HorizontalOptions="FillAndExpand"
-                        MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
-                        Command="{Binding RejectCommand}"
-                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
-                </HorizontalStackLayout>
+                    <!-- Section header -->
+                    <Grid ColumnDefinitions="3,*">
+                        <BoxView Grid.Column="0"
+                                 WidthRequest="3" HeightRequest="18"
+                                 Color="{StaticResource GoldAccent}"
+                                 VerticalOptions="Center" />
+                        <Label Grid.Column="1"
+                               Text="PAYMENT DETAILS"
+                               Style="{StaticResource SectionLabelStyle}"
+                               Margin="10,0,0,0"
+                               VerticalOptions="Center" />
+                    </Grid>
+
+                    <!-- AMOUNT -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="AMOUNT (US$)" Style="{StaticResource SectionLabelStyle}" />
+                        <Grid RowDefinitions="52,2" ColumnDefinitions="*,Auto"
+                              BackgroundColor="{StaticResource CardSurface}">
+                            <Entry Grid.Row="0" Grid.Column="0"
+                                   Text="{Binding Amount}"
+                                   Keyboard="Numeric"
+                                   BackgroundColor="Transparent"
+                                   TextColor="White"
+                                   PlaceholderColor="{StaticResource MutedText}"
+                                   Placeholder="0.00"
+                                   FontFamily="SpaceGrotesk"
+                                   FontSize="15"
+                                   Margin="18,0" />
+                            <Label Grid.Row="0" Grid.Column="1"
+                                   Text="$"
+                                   FontFamily="SpaceGrotesk-Bold"
+                                   FontSize="16"
+                                   TextColor="{StaticResource GoldAccent}"
+                                   VerticalOptions="Center"
+                                   Margin="0,0,18,0" />
+                            <BoxView Grid.Row="1" Grid.ColumnSpan="2"
+                                     Color="{StaticResource GoldAccent}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- PAYMENT METHOD -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="PAYMENT METHOD" Style="{StaticResource SectionLabelStyle}" />
+                        <Grid RowDefinitions="52,2" BackgroundColor="{StaticResource CardSurface}">
+                            <Picker Grid.Row="0"
+                                    ItemsSource="{Binding PaymentMethods}"
+                                    SelectedIndex="{Binding SelectedMethodIndex}"
+                                    Title="Select payment method"
+                                    TitleColor="{StaticResource MutedText}"
+                                    TextColor="White"
+                                    BackgroundColor="Transparent"
+                                    HeightRequest="52"
+                                    Margin="4,0" />
+                            <BoxView Grid.Row="1" Color="{StaticResource StrokeColor}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- DATE -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="DATE" Style="{StaticResource SectionLabelStyle}" />
+                        <Grid RowDefinitions="52,2" BackgroundColor="{StaticResource CardSurface}">
+                            <DatePicker Grid.Row="0"
+                                        Date="{Binding Date}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="White"
+                                        Format="MMM d, yyyy"
+                                        FontFamily="SpaceGrotesk"
+                                        FontSize="15"
+                                        HeightRequest="52"
+                                        Margin="18,0" />
+                            <BoxView Grid.Row="1" Color="{StaticResource StrokeColor}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+
+                <!-- ═══════════ CTA SECTION ═══════════ -->
+                <VerticalStackLayout Spacing="12">
+
+                    <!-- Error -->
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="#E05555"
+                           FontSize="12"
+                           FontFamily="SpaceGrotesk"
+                           IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullConverter}}"
+                           HorizontalOptions="Center" />
+
+                    <!-- REGISTER PAYMENT (new payment) -->
+                    <Button Text="REGISTER PAYMENT"
+                            HeightRequest="56"
+                            Command="{Binding SaveCommand}"
+                            IsVisible="{Binding IsExisting, Converter={StaticResource InvertedBoolConverter}}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                            BackgroundColor="{StaticResource GoldAccent}"
+                            TextColor="{StaticResource AppBackground}"
+                            FontFamily="SpaceGrotesk-Bold"
+                            FontSize="14"
+                            CharacterSpacing="2"
+                            CornerRadius="12">
+                        <Button.ImageSource>
+                            <FontImageSource Glyph="{x:Static fonts:FluentUi.add_circle_20_regular}"
+                                             FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                             Size="18"
+                                             Color="{StaticResource AppBackground}" />
+                        </Button.ImageSource>
+                    </Button>
+
+                    <!-- APPROVE / REJECT (partner's pending payment) -->
+                    <HorizontalStackLayout Spacing="12"
+                                           HorizontalOptions="Fill"
+                                           IsVisible="{Binding CanApprove}">
+                        <Button Text="APPROVE"
+                                HorizontalOptions="FillAndExpand"
+                                HeightRequest="56"
+                                Command="{Binding ApproveCommand}"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                BackgroundColor="#2D5A2D"
+                                TextColor="White"
+                                FontFamily="SpaceGrotesk-Bold"
+                                FontSize="13"
+                                CharacterSpacing="1"
+                                CornerRadius="12" />
+                        <Button Text="REJECT"
+                                HorizontalOptions="FillAndExpand"
+                                HeightRequest="56"
+                                Command="{Binding RejectCommand}"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                BackgroundColor="#5A2D2D"
+                                TextColor="White"
+                                FontFamily="SpaceGrotesk-Bold"
+                                FontSize="13"
+                                CharacterSpacing="1"
+                                CornerRadius="12" />
+                    </HorizontalStackLayout>
+
+                    <!-- CANCEL -->
+                    <Button Text="CANCEL"
+                            HeightRequest="48"
+                            Clicked="OnCancelTapped"
+                            BackgroundColor="Transparent"
+                            BorderColor="{StaticResource StrokeColor}"
+                            BorderWidth="1"
+                            TextColor="{StaticResource MutedText}"
+                            FontFamily="SpaceGrotesk"
+                            FontSize="12"
+                            CharacterSpacing="2"
+                            CornerRadius="12" />
+
+                </VerticalStackLayout>
+
             </VerticalStackLayout>
         </ScrollView>
 
+        <!-- Loading overlay -->
         <ActivityIndicator IsRunning="{Binding IsBusy}"
                            IsVisible="{Binding IsBusy}"
+                           Color="{StaticResource GoldAccent}"
                            HorizontalOptions="Center"
                            VerticalOptions="Center" />
+
     </Grid>
+
 </ContentPage>

@@ -5,31 +5,25 @@ using Microsoft.Extensions.Logging;
 
 namespace ExpenseTracker.PageModels;
 
-public partial class CardDetailPageModel : ObservableObject, IQueryAttributable
+public partial class CardDetailPageModel : ObservableObject
 {
     private CardDto? _card;
     private readonly CardRepository _cardRepository;
     private readonly ModalErrorHandler _errorHandler;
     private readonly ILogger<CardDetailPageModel> _logger;
 
-    [ObservableProperty]
-    private string _name = string.Empty;
+    [ObservableProperty] private string _name = string.Empty;
+    [ObservableProperty] private string _symbol = string.Empty;
+    [ObservableProperty] private string _lastDigits = string.Empty;
+    [ObservableProperty] private bool _isBusy;
+    [ObservableProperty] private string _errorMessage = string.Empty;
+    [ObservableProperty] private List<CardDto> _cards = [];
+    [ObservableProperty] private string _cardsCountText = "0 REGISTERED";
+    [ObservableProperty] private string _pageTitle = "ADD CARD";
+    [ObservableProperty] private bool _isCardsExpanded = true;
+    [ObservableProperty] private bool _isCardsEmpty = true;
 
-    [ObservableProperty]
-    private string _symbol = string.Empty;
-
-    [ObservableProperty]
-    private string _lastDigits = string.Empty;
-
-    // Card network options for dropdown
-    public List<string> CardNetworks { get; } = new()
-    {
-        "Visa",
-        "MasterCard",
-        "American Express",
-        "Discover",
-        "Other"
-    };
+    public List<string> CardNetworks { get; } = ["Visa", "MasterCard", "American Express"];
 
     private int _selectedNetworkIndex = -1;
     public int SelectedNetworkIndex
@@ -44,24 +38,6 @@ public partial class CardDetailPageModel : ObservableObject, IQueryAttributable
         }
     }
 
-    [ObservableProperty]
-    private bool _isBusy;
-
-    [ObservableProperty]
-    private string _errorMessage = string.Empty;
-
-    private bool _canDelete;
-
-    public bool CanDelete
-    {
-        get => _canDelete;
-        set
-        {
-            _canDelete = value;
-            DeleteCommand.NotifyCanExecuteChanged();
-        }
-    }
-
     public CardDetailPageModel(
         CardRepository cardRepository,
         ModalErrorHandler errorHandler,
@@ -72,21 +48,55 @@ public partial class CardDetailPageModel : ObservableObject, IQueryAttributable
         _logger = logger;
     }
 
-    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    [RelayCommand]
+    private async Task Appearing() => await LoadCardsAsync();
+
+    [RelayCommand]
+    private void ToggleCards() => IsCardsExpanded = !IsCardsExpanded;
+
+    [RelayCommand]
+    private async Task SelectCardForEdit(CardDto card) => await LoadCard(card.Id);
+
+    [RelayCommand]
+    private async Task DeleteCardInList(CardDto card)
     {
-        if (query.ContainsKey("id"))
+        bool confirm = await Shell.Current.DisplayAlert(
+            "Delete Card",
+            $"Delete {card.Symbol} {card.Name}?",
+            "Delete",
+            "Cancel");
+
+        if (!confirm) return;
+
+        try
         {
-            long id = Convert.ToInt64(query["id"]);
-            LoadCard(id).FireAndForgetSafeAsync(_errorHandler);
+            IsBusy = true;
+            _logger.LogInformation("Deleting card ID: {Id}", card.Id);
+            await _cardRepository.DeleteAsync(card.Id);
+
+            if (_card?.Id == card.Id) ResetForm();
+
+            await LoadCardsAsync();
+            await AppShell.DisplayToastAsync("Card deleted");
         }
-        else
+        catch (InvalidOperationException ex)
         {
-            // New card
-            _card = new CardDto();
-            CanDelete = false;
-            _logger.LogInformation("Creating new card");
+            _logger.LogWarning(ex, "Cannot delete card with existing charges");
+            ErrorMessage = ex.Message;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to delete card");
+            _errorHandler.HandleError(ex);
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
+
+    [RelayCommand]
+    private void Cancel() => ResetForm();
 
     private async Task LoadCard(long id)
     {
@@ -105,15 +115,12 @@ public partial class CardDetailPageModel : ObservableObject, IQueryAttributable
                 return;
             }
 
-            // Populate form fields
             Name = _card.Name;
             Symbol = _card.Symbol;
-            LastDigits = _card.LastDigits.ToString();
-
-            // Set network dropdown index
+            LastDigits = _card.LastDigits.ToString("D4");
             SelectedNetworkIndex = CardNetworks.IndexOf(_card.Symbol);
+            PageTitle = "EDIT CARD";
 
-            CanDelete = true;
             _logger.LogInformation("Card loaded successfully");
         }
         catch (Exception ex)
@@ -130,7 +137,6 @@ public partial class CardDetailPageModel : ObservableObject, IQueryAttributable
     [RelayCommand]
     private async Task Save()
     {
-        // Validation
         if (string.IsNullOrWhiteSpace(Name))
         {
             ErrorMessage = "Please enter a card name";
@@ -143,7 +149,7 @@ public partial class CardDetailPageModel : ObservableObject, IQueryAttributable
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(LastDigits) || !int.TryParse(LastDigits, out int digits) || LastDigits.Length != 4)
+        if (string.IsNullOrWhiteSpace(LastDigits) || LastDigits.Length != 4 || !int.TryParse(LastDigits, out int digits))
         {
             ErrorMessage = "Please enter exactly 4 digits";
             return;
@@ -154,13 +160,7 @@ public partial class CardDetailPageModel : ObservableObject, IQueryAttributable
             IsBusy = true;
             ErrorMessage = string.Empty;
 
-            if (_card is null)
-            {
-                ErrorMessage = "Card data is missing";
-                return;
-            }
-
-            // Update card object
+            _card ??= new CardDto();
             _card.Name = Name;
             _card.Symbol = Symbol;
             _card.LastDigits = digits;
@@ -168,7 +168,8 @@ public partial class CardDetailPageModel : ObservableObject, IQueryAttributable
             _logger.LogInformation("Saving card: {Name}", Name);
             await _cardRepository.SaveAsync(_card);
 
-            await Shell.Current.GoToAsync("..");
+            await LoadCardsAsync();
+            ResetForm();
             await AppShell.DisplayToastAsync("Card saved");
         }
         catch (Exception ex)
@@ -183,49 +184,29 @@ public partial class CardDetailPageModel : ObservableObject, IQueryAttributable
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanDelete))]
-    private async Task Delete()
+    private async Task LoadCardsAsync()
     {
-        if (_card is null || _card.Id == 0)
-        {
-            await Shell.Current.GoToAsync("..");
-            return;
-        }
-
-        bool confirm = await Shell.Current.DisplayAlert(
-            "Delete Card",
-            $"Are you sure you want to delete {Symbol} {Name}?",
-            "Delete",
-            "Cancel");
-
-        if (!confirm)
-            return;
-
         try
         {
-            IsBusy = true;
-            ErrorMessage = string.Empty;
-
-            _logger.LogInformation("Deleting card ID: {Id}", _card.Id);
-            await _cardRepository.DeleteAsync(_card.Id);
-
-            await Shell.Current.GoToAsync("..");
-            await AppShell.DisplayToastAsync("Card deleted");
-        }
-        catch (InvalidOperationException ex)
-        {
-            _logger.LogWarning(ex, "Cannot delete card with existing charges");
-            ErrorMessage = ex.Message;
+            var cards = await _cardRepository.ListAsync();
+            Cards = cards;
+            CardsCountText = $"{cards.Count} REGISTERED";
+            IsCardsEmpty = cards.Count == 0;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to delete card");
-            ErrorMessage = "Failed to delete card. Please try again.";
-            _errorHandler.HandleError(ex);
+            _logger.LogError(ex, "Failed to load cards");
         }
-        finally
-        {
-            IsBusy = false;
-        }
+    }
+
+    private void ResetForm()
+    {
+        _card = new CardDto();
+        Name = string.Empty;
+        Symbol = string.Empty;
+        LastDigits = string.Empty;
+        SelectedNetworkIndex = -1;
+        PageTitle = "ADD CARD";
+        ErrorMessage = string.Empty;
     }
 }

@@ -35,7 +35,7 @@
     <ShellContent
         Title="Cards"
         Icon="{StaticResource IconCards}"
-        ContentTemplate="{DataTemplate pages:CardListPage}"
+        ContentTemplate="{DataTemplate pages:CardDetailPage}"
         Route="cards" />
 
     <ShellContent

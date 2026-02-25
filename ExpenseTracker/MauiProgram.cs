@@ -75,6 +75,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<SignInPage>();
         builder.Services.AddSingleton<MainPageModel>();
         builder.Services.AddSingleton<MainPage>();
+        builder.Services.AddSingleton<CardDetailPageModel>();
+        builder.Services.AddSingleton<CardDetailPage>();
         builder.Services.AddSingleton<CardListPageModel>();
         builder.Services.AddSingleton<CardListPage>();
         builder.Services.AddSingleton<ManageProfilesPageModel>();
@@ -87,7 +89,7 @@ public static class MauiProgram
         builder.Services.AddTransientWithShellRoute<PaymentDetailPage, PaymentDetailPageModel>("payment");
         builder.Services.AddTransientWithShellRoute<CreateHouseholdPage, CreateHouseholdPageModel>("createhousehold");
         builder.Services.AddTransientWithShellRoute<JoinHouseholdPage, JoinHouseholdPageModel>("joinhousehold");
-        builder.Services.AddTransientWithShellRoute<CardDetailPage, CardDetailPageModel>("card");
+        // CardDetailPage is now the "cards" tab singleton — no longer a transient shell route
 
         return builder.Build();
     }

@@ -25,9 +25,22 @@ public class CardDto: BaseModel
     [Column("user_id_fk")]
     public string UserIdFk { get; set; } = string.Empty;
 
-    // Computed property for list display (not stored in DB)
+    // Computed properties for display (not stored in DB)
     [JsonIgnore]
     public string DisplayName => $"{Symbol} {Name} ••{LastDigits:D4}";
+
+    [JsonIgnore]
+    public string NetworkBadge => Symbol.ToUpperInvariant() switch
+    {
+        "VISA" => "VISA",
+        "MASTERCARD" => "MC",
+        "AMERICAN EXPRESS" => "AMEX",
+        "DISCOVER" => "DISC",
+        _ => Symbol.Length > 4 ? Symbol[..4].ToUpperInvariant() : Symbol.ToUpperInvariant()
+    };
+
+    [JsonIgnore]
+    public string MaskedDigits => $"•••• {LastDigits:D4}";
 
     public override string ToString() => DisplayName;
 }

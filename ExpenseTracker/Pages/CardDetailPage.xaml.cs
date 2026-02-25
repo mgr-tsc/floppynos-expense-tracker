@@ -7,4 +7,9 @@ public partial class CardDetailPage : ContentPage
         InitializeComponent();
         BindingContext = model;
     }
+
+    private async void OnBackTapped(object? sender, TappedEventArgs e)
+    {
+        await Shell.Current.GoToAsync("//main");
+    }
 }

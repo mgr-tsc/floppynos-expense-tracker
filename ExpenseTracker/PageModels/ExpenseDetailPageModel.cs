@@ -58,6 +58,9 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     private bool _isExisting;
 
+    [ObservableProperty]
+    private string _pageTitle = "NEW CHARGE";
+
     public ExpenseDetailPageModel(
         ChargeRepository chargeRepository,
         CardRepository cardRepository,
@@ -110,6 +113,7 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
             }
 
             IsExisting = true;
+            PageTitle = "VIEW CHARGE";
 
             // Populate form fields
             Description = _expense.Description ?? string.Empty;

@@ -2,13 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
-             xmlns:models="clr-namespace:ExpenseTracker.Models.Supabase"
-             xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.TextInputLayout;assembly=Syncfusion.Maui.Toolkit"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:fonts="clr-namespace:ExpenseTracker.Resources.Fonts"
              x:Class="ExpenseTracker.Pages.ExpenseDetailPage"
              x:DataType="pageModels:ExpenseDetailPageModel"
-             Title="Charge">
+             x:Name="ExpensePage"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource AppBackground}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -18,116 +18,284 @@
     </ContentPage.Resources>
 
     <Grid>
+
         <ScrollView IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}">
-            <VerticalStackLayout Padding="{StaticResource LayoutPadding}" Spacing="{StaticResource LayoutSpacing}">
+            <VerticalStackLayout Padding="28,8,28,36" Spacing="28">
 
-                <!-- Error message -->
-                <Label Text="{Binding ErrorMessage}"
-                       TextColor="Red"
-                       IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullConverter}}"
-                       Style="{StaticResource Caption1}" />
+                <!-- ═══════════ HEADER ═══════════ -->
+                <Grid ColumnDefinitions="Auto,*" Padding="0,16,0,4">
 
-                <sf:SfTextInputLayout Hint="Description">
-                    <Entry Text="{Binding Description}" SemanticProperties.Description="Description" />
-                </sf:SfTextInputLayout>
+                    <Border Grid.Column="0"
+                            WidthRequest="40" HeightRequest="40"
+                            Background="{StaticResource CardSurface}"
+                            Stroke="{StaticResource StrokeColor}"
+                            StrokeThickness="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="20" />
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnBackTapped" />
+                        </Border.GestureRecognizers>
+                        <Label Text="{x:Static fonts:FluentUi.arrow_left_24_regular}"
+                               FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                               FontSize="18"
+                               TextColor="White"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </Border>
 
-                <sf:SfTextInputLayout Hint="Amount">
-                    <Entry Text="{Binding Amount}"
-                           Keyboard="Numeric"
-                           SemanticProperties.Description="Amount" />
-                </sf:SfTextInputLayout>
+                    <VerticalStackLayout Grid.Column="1" Margin="16,0,0,0" VerticalOptions="Center" Spacing="2">
+                        <Label Text="EXPENSE" Style="{StaticResource SectionLabelStyle}" />
+                        <Label Text="{Binding PageTitle}"
+                               FontSize="26"
+                               FontFamily="SpaceGrotesk-Bold"
+                               TextColor="White" />
+                    </VerticalStackLayout>
 
-                <sf:SfTextInputLayout Hint="Date">
-                    <DatePicker Date="{Binding Date}"
-                                SemanticProperties.Description="Charge date" />
-                </sf:SfTextInputLayout>
+                </Grid>
 
-                <!-- Card Picker -->
-                <Label Text="Card"
-                       Style="{StaticResource Caption1}"
-                       Margin="0,8,0,0" />
-                <Picker ItemsSource="{Binding Cards}"
-                        SelectedIndex="{Binding CardIndex}"
-                        Title="Select card"
-                        SemanticProperties.Description="Payment card" />
+                <!-- ═══════════ FORM ═══════════ -->
+                <VerticalStackLayout Spacing="16">
 
-                <!-- Category Picker -->
-                <HorizontalStackLayout Margin="0,8,0,0" Spacing="6">
-                    <Label Text="Category"
-                           Style="{StaticResource Caption1}"
-                           VerticalOptions="Center" />
-                    <ImageButton Command="{Binding AddCategoryCommand}"
-                                 WidthRequest="20"
-                                 HeightRequest="20"
-                                 VerticalOptions="Center"
-                                 SemanticProperties.Description="Add category">
-                        <ImageButton.Source>
+                    <!-- Section header -->
+                    <Grid ColumnDefinitions="3,*">
+                        <BoxView Grid.Column="0"
+                                 WidthRequest="3" HeightRequest="18"
+                                 Color="{StaticResource GoldAccent}"
+                                 VerticalOptions="Center" />
+                        <Label Grid.Column="1"
+                               Text="CHARGE DETAILS"
+                               Style="{StaticResource SectionLabelStyle}"
+                               Margin="10,0,0,0"
+                               VerticalOptions="Center" />
+                    </Grid>
+
+                    <!-- DESCRIPTION -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="DESCRIPTION" Style="{StaticResource SectionLabelStyle}" />
+                        <Grid RowDefinitions="52,2" BackgroundColor="{StaticResource CardSurface}">
+                            <Entry Grid.Row="0"
+                                   Text="{Binding Description}"
+                                   BackgroundColor="Transparent"
+                                   TextColor="White"
+                                   PlaceholderColor="{StaticResource MutedText}"
+                                   Placeholder="e.g., Grocery run"
+                                   FontFamily="SpaceGrotesk"
+                                   FontSize="14"
+                                   Margin="18,0" />
+                            <BoxView Grid.Row="1" Color="{StaticResource StrokeColor}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- PAYMENT METHOD (Card) -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="PAYMENT METHOD" Style="{StaticResource SectionLabelStyle}" />
+                        <Grid RowDefinitions="52,2" BackgroundColor="{StaticResource CardSurface}">
+                            <Picker Grid.Row="0"
+                                    ItemsSource="{Binding Cards}"
+                                    SelectedIndex="{Binding CardIndex}"
+                                    Title="Select card"
+                                    TitleColor="{StaticResource MutedText}"
+                                    TextColor="White"
+                                    BackgroundColor="Transparent"
+                                    HeightRequest="52"
+                                    Margin="4,0" />
+                            <BoxView Grid.Row="1" Color="{StaticResource StrokeColor}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- AMOUNT -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="AMOUNT (US$)" Style="{StaticResource SectionLabelStyle}" />
+                        <Grid RowDefinitions="52,2" ColumnDefinitions="*,Auto"
+                              BackgroundColor="{StaticResource CardSurface}">
+                            <Entry Grid.Row="0" Grid.Column="0"
+                                   Text="{Binding Amount}"
+                                   Keyboard="Numeric"
+                                   BackgroundColor="Transparent"
+                                   TextColor="White"
+                                   PlaceholderColor="{StaticResource MutedText}"
+                                   Placeholder="0.00"
+                                   FontFamily="SpaceGrotesk"
+                                   FontSize="15"
+                                   Margin="18,0" />
+                            <Label Grid.Row="0" Grid.Column="1"
+                                   Text="$"
+                                   FontFamily="SpaceGrotesk-Bold"
+                                   FontSize="16"
+                                   TextColor="{StaticResource GoldAccent}"
+                                   VerticalOptions="Center"
+                                   Margin="0,0,18,0" />
+                            <BoxView Grid.Row="1" Grid.ColumnSpan="2"
+                                     Color="{StaticResource GoldAccent}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- SPLIT POLICY -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="SPLIT POLICY" Style="{StaticResource SectionLabelStyle}" />
+                        <Grid RowDefinitions="52,2" BackgroundColor="{StaticResource CardSurface}">
+                            <Picker Grid.Row="0"
+                                    ItemsSource="{Binding SplitOptions}"
+                                    SelectedIndex="{Binding SplitOptionIndex}"
+                                    Title="Select split policy"
+                                    TitleColor="{StaticResource MutedText}"
+                                    TextColor="White"
+                                    BackgroundColor="Transparent"
+                                    HeightRequest="52"
+                                    Margin="4,0" />
+                            <BoxView Grid.Row="1" Color="{StaticResource StrokeColor}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- CATEGORY -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="CATEGORY" Style="{StaticResource SectionLabelStyle}" />
+                        <Grid RowDefinitions="52,2" ColumnDefinitions="*,Auto"
+                              BackgroundColor="{StaticResource CardSurface}">
+                            <Picker Grid.Row="0" Grid.Column="0"
+                                    ItemsSource="{Binding Categories}"
+                                    SelectedIndex="{Binding CategoryIndex}"
+                                    Title="Select category"
+                                    TitleColor="{StaticResource MutedText}"
+                                    TextColor="White"
+                                    BackgroundColor="Transparent"
+                                    HeightRequest="52"
+                                    Margin="4,0" />
+                            <!-- + NEW button -->
+                            <Border Grid.Row="0" Grid.Column="1"
+                                    Background="{StaticResource ElevatedSurface}"
+                                    Stroke="{StaticResource StrokeColor}"
+                                    StrokeThickness="1"
+                                    Margin="8,12,12,12">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding AddCategoryCommand}" />
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="4" Padding="10,0">
+                                    <Label Text="{x:Static fonts:FluentUi.add_circle_20_regular}"
+                                           FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                           FontSize="12"
+                                           TextColor="{StaticResource GoldAccent}"
+                                           VerticalOptions="Center" />
+                                    <Label Text="NEW"
+                                           FontFamily="SpaceGrotesk-Bold"
+                                           FontSize="10"
+                                           TextColor="{StaticResource GoldAccent}"
+                                           CharacterSpacing="1.5"
+                                           VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </Border>
+                            <BoxView Grid.Row="1" Grid.ColumnSpan="2"
+                                     Color="{StaticResource StrokeColor}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- DATE -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="DATE" Style="{StaticResource SectionLabelStyle}" />
+                        <Grid RowDefinitions="52,2" BackgroundColor="{StaticResource CardSurface}">
+                            <DatePicker Grid.Row="0"
+                                        Date="{Binding Date}"
+                                        BackgroundColor="Transparent"
+                                        TextColor="White"
+                                        Format="MMM d, yyyy"
+                                        FontFamily="SpaceGrotesk"
+                                        FontSize="15"
+                                        HeightRequest="52"
+                                        Margin="18,0" />
+                            <BoxView Grid.Row="1" Color="{StaticResource StrokeColor}" />
+                        </Grid>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+
+                <!-- ═══════════ CTA SECTION ═══════════ -->
+                <VerticalStackLayout Spacing="12">
+
+                    <!-- Error -->
+                    <Label Text="{Binding ErrorMessage}"
+                           TextColor="#E05555"
+                           FontSize="12"
+                           FontFamily="SpaceGrotesk"
+                           IsVisible="{Binding ErrorMessage, Converter={StaticResource IsNotNullConverter}}"
+                           HorizontalOptions="Center" />
+
+                    <!-- CREATE CHARGE (new charge) -->
+                    <Button Text="CREATE CHARGE"
+                            HeightRequest="56"
+                            Command="{Binding SaveCommand}"
+                            IsVisible="{Binding IsExisting, Converter={StaticResource InvertedBoolConverter}}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                            BackgroundColor="{StaticResource GoldAccent}"
+                            TextColor="{StaticResource AppBackground}"
+                            FontFamily="SpaceGrotesk-Bold"
+                            FontSize="14"
+                            CharacterSpacing="2"
+                            CornerRadius="12">
+                        <Button.ImageSource>
                             <FontImageSource Glyph="{x:Static fonts:FluentUi.add_circle_20_regular}"
                                              FontFamily="{x:Static fonts:FluentUi.fontFamily}"
-                                             Size="20"
-                                             Color="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" />
-                        </ImageButton.Source>
-                    </ImageButton>
-                </HorizontalStackLayout>
-                <Picker ItemsSource="{Binding Categories}"
-                        SelectedIndex="{Binding CategoryIndex}"
-                        Title="Select category"
-                        SemanticProperties.Description="Charge category" />
+                                             Size="18"
+                                             Color="{StaticResource AppBackground}" />
+                        </Button.ImageSource>
+                    </Button>
 
-                <!-- Split Policy Picker -->
-                <HorizontalStackLayout Margin="0,8,0,0" Spacing="6">
-                    <Label Text="Split Policy"
-                           Style="{StaticResource Caption1}"
-                           VerticalOptions="Center" />
-                    <!-- <ImageButton Command="{Binding ShowPolicyInfoCommand}" -->
-                    <!--              WidthRequest="20" -->
-                    <!--              HeightRequest="20" -->
-                    <!--              VerticalOptions="Center" -->
-                    <!--              SemanticProperties.Description="Policy info"> -->
-                    <!--     <ImageButton.Source> -->
-                    <!--         <FontImageSource Glyph="{x:Static fonts:FluentUi.question_circle_12_regular}" -->
-                    <!--                          FontFamily="{x:Static fonts:FluentUi.fontFamily}" -->
-                    <!--                          Size="12" -->
-                    <!--                          Color="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray300}}" /> -->
-                    <!--     </ImageButton.Source> -->
-                    <!-- </ImageButton> -->
-                </HorizontalStackLayout>
-                <Picker ItemsSource="{Binding SplitOptions}"
-                        SelectedIndex="{Binding SplitOptionIndex}"
-                        Title="Select split policy"
-                        SemanticProperties.Description="Split policy" />
-                <!-- Save button (new charges only) -->
-                <Button Text="Save"
-                    MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
-                    Command="{Binding SaveCommand}"
-                    IsVisible="{Binding IsExisting, Converter={StaticResource InvertedBoolConverter}}"
-                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
+                    <!-- APPROVE / REJECT (partner's pending charge) -->
+                    <HorizontalStackLayout Spacing="12"
+                                           HorizontalOptions="Fill"
+                                           IsVisible="{Binding CanApprove}">
+                        <Button Text="APPROVE"
+                                HorizontalOptions="FillAndExpand"
+                                HeightRequest="56"
+                                Command="{Binding ApproveCommand}"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                BackgroundColor="#2D5A2D"
+                                TextColor="White"
+                                FontFamily="SpaceGrotesk-Bold"
+                                FontSize="13"
+                                CharacterSpacing="1"
+                                CornerRadius="12" />
+                        <Button Text="REJECT"
+                                HorizontalOptions="FillAndExpand"
+                                HeightRequest="56"
+                                Command="{Binding RejectCommand}"
+                                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                                BackgroundColor="#5A2D2D"
+                                TextColor="White"
+                                FontFamily="SpaceGrotesk-Bold"
+                                FontSize="13"
+                                CharacterSpacing="1"
+                                CornerRadius="12" />
+                    </HorizontalStackLayout>
 
-                <!-- Approve/Reject buttons (partner's pending charges only) -->
-                <HorizontalStackLayout Spacing="12"
-                    HorizontalOptions="Fill"
-                    IsVisible="{Binding CanApprove}">
-                    <Button Text="Approve"
-                        BackgroundColor="Green"
-                        TextColor="White"
-                        HorizontalOptions="FillAndExpand"
-                        MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
-                        Command="{Binding ApproveCommand}"
-                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
-                    <Button Text="Reject"
-                        BackgroundColor="Red"
-                        TextColor="White"
-                        HorizontalOptions="FillAndExpand"
-                        MinimumHeightRequest="{OnIdiom 44, Desktop=60}"
-                        Command="{Binding RejectCommand}"
-                        IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
-                </HorizontalStackLayout>
+                    <!-- CANCEL -->
+                    <Button Text="CANCEL"
+                            HeightRequest="48"
+                            Clicked="OnCancelTapped"
+                            BackgroundColor="Transparent"
+                            BorderColor="{StaticResource StrokeColor}"
+                            BorderWidth="1"
+                            TextColor="{StaticResource MutedText}"
+                            FontFamily="SpaceGrotesk"
+                            FontSize="12"
+                            CharacterSpacing="2"
+                            CornerRadius="12" />
+
+                </VerticalStackLayout>
+
             </VerticalStackLayout>
         </ScrollView>
-        
+
+        <!-- Loading overlay -->
         <ActivityIndicator IsRunning="{Binding IsBusy}"
                            IsVisible="{Binding IsBusy}"
+                           Color="{StaticResource GoldAccent}"
                            HorizontalOptions="Center"
                            VerticalOptions="Center" />
+
     </Grid>
+
 </ContentPage>

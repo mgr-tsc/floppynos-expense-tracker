@@ -43,6 +43,9 @@ public partial class PaymentDetailPageModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     private bool _canApprove;
 
+    [ObservableProperty]
+    private string _pageTitle = "NEW PAYMENT";
+
     public PaymentDetailPageModel(
         PaymentRepository paymentRepository,
         HouseholdRepository householdRepository,
@@ -89,6 +92,7 @@ public partial class PaymentDetailPageModel : ObservableObject, IQueryAttributab
             }
 
             IsExisting = true;
+            PageTitle = "VIEW PAYMENT";
 
             // Populate form fields
             Amount = _payment.Amount;
