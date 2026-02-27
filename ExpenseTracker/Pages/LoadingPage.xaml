@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:fonts="clr-namespace:ExpenseTracker.Resources.Fonts"
+             xmlns:shapes="clr-namespace:Microsoft.Maui.Controls.Shapes;assembly=Microsoft.Maui.Controls"
              x:Class="ExpenseTracker.Pages.LoadingPage"
              x:DataType="pageModels:LoadingPageModel"
              x:Name="LoadPage"
@@ -24,7 +24,7 @@
         <VerticalStackLayout Grid.Row="0"
                              VerticalOptions="Center"
                              HorizontalOptions="Center"
-                             Spacing="18">
+                             Spacing="24">
 
             <!-- Eyebrow -->
             <Label Text="INITIALIZING"
@@ -48,22 +48,39 @@
                    LineHeight="1.45"
                    HorizontalTextAlignment="Center" />
 
-            <!-- Spinner shell -->
-            <Border WidthRequest="90" HeightRequest="90"
-                    Background="{StaticResource CardSurface}"
-                    Stroke="{StaticResource StrokeColor}"
-                    StrokeThickness="1"
-                    HorizontalOptions="Center">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="45" />
-                </Border.StrokeShape>
-                <ActivityIndicator IsRunning="True"
-                                   Color="{StaticResource GoldAccent}"
-                                   WidthRequest="40"
-                                   HeightRequest="40"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center" />
-            </Border>
+            <!-- ── Spinner ── -->
+            <Grid WidthRequest="120" HeightRequest="120"
+                  HorizontalOptions="Center">
+
+                <!-- Dark base ring -->
+                <Ellipse WidthRequest="120" HeightRequest="120"
+                         Stroke="#1F2937"
+                         StrokeThickness="10"
+                         Fill="Transparent"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Center" />
+
+                <!-- Gold rotating arc -->
+                <Ellipse x:Name="SpinnerArc"
+                         WidthRequest="120" HeightRequest="120"
+                         Stroke="#D4AF37"
+                         StrokeThickness="10"
+                         StrokeDashArray="90, 290"
+                         StrokeLineCap="Round"
+                         Fill="Transparent"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Center" />
+
+                <!-- Inner dashed accent ring (static) -->
+                <Ellipse WidthRequest="88" HeightRequest="88"
+                         Stroke="#D4AF37"
+                         StrokeThickness="2"
+                         StrokeDashArray="4, 14"
+                         Fill="Transparent"
+                         HorizontalOptions="Center"
+                         VerticalOptions="Center" />
+
+            </Grid>
 
             <!-- Dots row -->
             <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">

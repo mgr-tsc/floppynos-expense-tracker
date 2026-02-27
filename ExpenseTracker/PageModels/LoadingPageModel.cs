@@ -29,6 +29,10 @@ public partial class LoadingPageModel : ObservableObject
 
         // Try to restore a previous session from stored tokens
         var sessionRestored = await _signIn.TryRestoreSessionAsync();
+
+        // Minimum display time so the loading animation is visible
+        await Task.Delay(2000, ct);
+
         if (sessionRestored)
         {
             await NavigateBasedOnHouseholdAsync();
