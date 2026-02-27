@@ -52,7 +52,7 @@ public class PaymentRepository
             var result = await _supabase.Client!.From<PaymentDto>()
                 .Where(x => x.Id == item.Id)
                 .Update(item);
-            return result.Models.First();
+            return result.Models.FirstOrDefault() ?? item;
         }
     }
 

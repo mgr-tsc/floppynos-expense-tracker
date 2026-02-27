@@ -59,6 +59,17 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
     private bool _isExisting;
 
     [ObservableProperty]
+    private bool _isOwner;
+
+    /// <summary>True when form fields should be interactive (new charge or owner editing a rejected one).</summary>
+    [ObservableProperty]
+    private bool _isEditable;
+
+    /// <summary>True when an existing rejected charge can be re-submitted by its owner.</summary>
+    [ObservableProperty]
+    private bool _canResubmit;
+
+    [ObservableProperty]
     private string _pageTitle = "NEW CHARGE";
 
     public ExpenseDetailPageModel(
@@ -93,6 +104,9 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
             _expense = new ChargeDto();
             IsExisting = false;
             CanApprove = false;
+            IsOwner = true;
+            IsEditable = true;
+            CanResubmit = false;
             _logger.LogInformation("Creating new charge");
             LoadFormData().FireAndForgetSafeAsync(_errorHandler);
         }
@@ -128,14 +142,18 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
             CategoryIndex = Categories.FindIndex(c => c.Id == _expense.CategoryIdFk);
             SplitOptionIndex = SplitOptions.FindIndex(p => p.Id == _expense.PolicyIdFk);
 
-            // Determine if current user can approve (only if it's NOT their own charge)
+            // Determine ownership and editability
             var currentUserId = _supabaseService.GetCurrentUserId();
+            IsOwner = _expense.IsOwnCharge(currentUserId ?? "");
+            var isRejected = string.Equals(_expense.Status?.Trim(), "rejected", StringComparison.OrdinalIgnoreCase);
             CanApprove = !string.IsNullOrEmpty(currentUserId)
-                         && !_expense.IsOwnCharge(currentUserId)
-                         && _expense.Status?.ToLower() == "pending";
+                         && !IsOwner
+                         && string.Equals(_expense.Status?.Trim(), "pending", StringComparison.OrdinalIgnoreCase);
+            IsEditable = IsOwner && isRejected;
+            CanResubmit = IsEditable;
 
-            _logger.LogInformation("Loaded charge {Id}, IsOwn={IsOwn}, CanApprove={CanApprove}",
-                chargeId, _expense.IsOwnCharge(currentUserId ?? ""), CanApprove);
+            _logger.LogInformation("Loaded charge {Id}, IsOwner={IsOwner}, CanApprove={CanApprove}, CanResubmit={CanResubmit}",
+                chargeId, IsOwner, CanApprove, CanResubmit);
         }
         catch (Exception ex)
         {
@@ -337,13 +355,17 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
             _expense.CategoryIdFk = Categories[CategoryIndex].Id;
             _expense.HouseholdIdFk = _householdId;
 
-            _logger.LogInformation("Saving charge: {Description}, Amount: {Amount}, Card: {CardId}, Policy: {PolicyId}, Household: {HouseholdId}",
-                Description, Amount, _expense.CardIdFk, _expense.PolicyIdFk, _householdId);
+            // Re-submitting a rejected charge resets it to pending for partner review
+            if (CanResubmit)
+                _expense.Status = "pending";
+
+            _logger.LogInformation("Saving charge: {Description}, Amount: {Amount}, CanResubmit={CanResubmit}",
+                Description, Amount, CanResubmit);
 
             await _chargeRepository.SaveAsync(_expense);
 
             await Shell.Current.GoToAsync("..");
-            await AppShell.DisplayToastAsync("Charge saved");
+            await AppShell.DisplayToastAsync(CanResubmit ? "Charge re-submitted" : "Charge saved");
         }
         catch (Exception ex)
         {

@@ -44,6 +44,17 @@ public partial class PaymentDetailPageModel : ObservableObject, IQueryAttributab
     private bool _canApprove;
 
     [ObservableProperty]
+    private bool _isOwner;
+
+    /// <summary>True when form fields should be interactive (new payment or owner editing a rejected one).</summary>
+    [ObservableProperty]
+    private bool _isEditable;
+
+    /// <summary>True when an existing rejected payment can be re-submitted by its owner.</summary>
+    [ObservableProperty]
+    private bool _canResubmit;
+
+    [ObservableProperty]
     private string _pageTitle = "NEW PAYMENT";
 
     public PaymentDetailPageModel(
@@ -72,6 +83,9 @@ public partial class PaymentDetailPageModel : ObservableObject, IQueryAttributab
             _payment = new PaymentDto();
             IsExisting = false;
             CanApprove = false;
+            IsOwner = true;
+            IsEditable = true;
+            CanResubmit = false;
             _logger.LogInformation("Creating new payment");
             LoadFormData().FireAndForgetSafeAsync(_errorHandler);
         }
@@ -100,13 +114,18 @@ public partial class PaymentDetailPageModel : ObservableObject, IQueryAttributab
             SelectedMethodIndex = Array.IndexOf(PaymentMethodDbValues, _payment.PaymentMethod);
             if (SelectedMethodIndex < 0) SelectedMethodIndex = 0;
 
-            // Determine if current user can approve
+            // Determine ownership and editability
             var currentUserId = _supabaseService.GetCurrentUserId();
+            IsOwner = _payment.IsOwnPayment(currentUserId ?? "");
+            var isRejected = string.Equals(_payment.Status?.Trim(), "rejected", StringComparison.OrdinalIgnoreCase);
             CanApprove = !string.IsNullOrEmpty(currentUserId)
-                         && !_payment.IsOwnPayment(currentUserId)
-                         && _payment.Status?.ToLower() == "pending";
+                         && !IsOwner
+                         && string.Equals(_payment.Status?.Trim(), "pending", StringComparison.OrdinalIgnoreCase);
+            IsEditable = IsOwner && isRejected;
+            CanResubmit = IsEditable;
 
-            _logger.LogInformation("Loaded payment {Id}, CanApprove={CanApprove}", paymentId, CanApprove);
+            _logger.LogInformation("Loaded payment {Id}, IsOwner={IsOwner}, CanApprove={CanApprove}, CanResubmit={CanResubmit}",
+                paymentId, IsOwner, CanApprove, CanResubmit);
         }
         catch (Exception ex)
         {
@@ -231,13 +250,17 @@ public partial class PaymentDetailPageModel : ObservableObject, IQueryAttributab
             _payment.UserIdFk = _supabaseService.GetCurrentUserId()!;
             _payment.HouseholdIdFk = _householdId;
 
-            _logger.LogInformation("Saving payment: Amount={Amount}, Method={Method}, Household={HouseholdId}",
-                Amount, _payment.PaymentMethod, _householdId);
+            // Re-submitting a rejected payment resets it to pending for partner review
+            if (CanResubmit)
+                _payment.Status = "pending";
+
+            _logger.LogInformation("Saving payment: Amount={Amount}, Method={Method}, CanResubmit={CanResubmit}",
+                Amount, _payment.PaymentMethod, CanResubmit);
 
             await _paymentRepository.SaveAsync(_payment);
 
             await Shell.Current.GoToAsync("..");
-            await AppShell.DisplayToastAsync("Payment saved");
+            await AppShell.DisplayToastAsync(CanResubmit ? "Payment re-submitted" : "Payment saved");
         }
         catch (Exception ex)
         {

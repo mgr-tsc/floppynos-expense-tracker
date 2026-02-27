@@ -60,8 +60,9 @@ public partial class MainPageModel : ObservableObject
     {
         Expenses = SelectedStatusIndex switch
         {
-            1 => _allExpenses.Where(e => string.Equals(e.Status?.Trim(), "pending", StringComparison.OrdinalIgnoreCase)).ToList(),
+            1 => _allExpenses.Where(e => string.Equals(e.Status?.Trim(), "pending",  StringComparison.OrdinalIgnoreCase)).ToList(),
             2 => _allExpenses.Where(e => string.Equals(e.Status?.Trim(), "approved", StringComparison.OrdinalIgnoreCase)).ToList(),
+            3 => _allExpenses.Where(e => string.Equals(e.Status?.Trim(), "rejected", StringComparison.OrdinalIgnoreCase)).ToList(),
             _ => _allExpenses.ToList(),
         };
     }
@@ -70,8 +71,9 @@ public partial class MainPageModel : ObservableObject
     {
         Payments = SelectedPaymentStatusIndex switch
         {
-            1 => _allPayments.Where(p => string.Equals(p.Status?.Trim(), "pending", StringComparison.OrdinalIgnoreCase)).ToList(),
+            1 => _allPayments.Where(p => string.Equals(p.Status?.Trim(), "pending",  StringComparison.OrdinalIgnoreCase)).ToList(),
             2 => _allPayments.Where(p => string.Equals(p.Status?.Trim(), "approved", StringComparison.OrdinalIgnoreCase)).ToList(),
+            3 => _allPayments.Where(p => string.Equals(p.Status?.Trim(), "rejected", StringComparison.OrdinalIgnoreCase)).ToList(),
             _ => _allPayments.ToList(),
         };
     }

@@ -78,6 +78,7 @@
                             <Entry Grid.Row="0" Grid.Column="0"
                                    Text="{Binding Amount}"
                                    Keyboard="Numeric"
+                                   IsReadOnly="{Binding IsEditable, Converter={StaticResource InvertedBoolConverter}}"
                                    BackgroundColor="Transparent"
                                    TextColor="White"
                                    PlaceholderColor="{StaticResource MutedText}"
@@ -104,6 +105,7 @@
                             <Picker Grid.Row="0"
                                     ItemsSource="{Binding PaymentMethods}"
                                     SelectedIndex="{Binding SelectedMethodIndex}"
+                                    IsEnabled="{Binding IsEditable}"
                                     Title="Select payment method"
                                     TitleColor="{StaticResource MutedText}"
                                     TextColor="White"
@@ -120,6 +122,7 @@
                         <Grid RowDefinitions="52,2" BackgroundColor="{StaticResource CardSurface}">
                             <DatePicker Grid.Row="0"
                                         Date="{Binding Date}"
+                                        IsEnabled="{Binding IsEditable}"
                                         BackgroundColor="Transparent"
                                         TextColor="White"
                                         Format="MMM d, yyyy"
@@ -158,6 +161,26 @@
                             CornerRadius="12">
                         <Button.ImageSource>
                             <FontImageSource Glyph="{x:Static fonts:FluentUi.add_circle_20_regular}"
+                                             FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                             Size="18"
+                                             Color="{StaticResource AppBackground}" />
+                        </Button.ImageSource>
+                    </Button>
+
+                    <!-- RE-SUBMIT (owner editing a rejected payment) -->
+                    <Button Text="RE-SUBMIT"
+                            HeightRequest="56"
+                            Command="{Binding SaveCommand}"
+                            IsVisible="{Binding CanResubmit}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                            BackgroundColor="{StaticResource GoldAccent}"
+                            TextColor="{StaticResource AppBackground}"
+                            FontFamily="SpaceGrotesk-Bold"
+                            FontSize="14"
+                            CharacterSpacing="2"
+                            CornerRadius="12">
+                        <Button.ImageSource>
+                            <FontImageSource Glyph="{x:Static fonts:FluentUi.arrow_upload_20_regular}"
                                              FontFamily="{x:Static fonts:FluentUi.fontFamily}"
                                              Size="18"
                                              Color="{StaticResource AppBackground}" />

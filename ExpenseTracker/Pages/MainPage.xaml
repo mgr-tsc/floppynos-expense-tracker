@@ -123,6 +123,7 @@
                                             <sf:SfSegmentItem Text="All" />
                                             <sf:SfSegmentItem Text="Pending" />
                                             <sf:SfSegmentItem Text="Approved" />
+                                            <sf:SfSegmentItem Text="Rejected" />
                                         </x:Array>
                                     </sf:SfSegmentedControl.ItemsSource>
                                 </sf:SfSegmentedControl>
@@ -207,6 +208,7 @@
                                             <sf:SfSegmentItem Text="All" />
                                             <sf:SfSegmentItem Text="Pending" />
                                             <sf:SfSegmentItem Text="Approved" />
+                                            <sf:SfSegmentItem Text="Rejected" />
                                         </x:Array>
                                     </sf:SfSegmentedControl.ItemsSource>
                                 </sf:SfSegmentedControl>
