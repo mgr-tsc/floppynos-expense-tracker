@@ -23,6 +23,7 @@
                 HorizontalOptions="End"
                 VerticalOptions="Center"
                 StrokeThickness="0"
+                Padding="0"
                 Background="{StaticResource GoldAccent}">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="999" />

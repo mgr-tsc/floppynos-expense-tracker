@@ -27,6 +27,7 @@
 
                     <Border Grid.Column="0"
                             WidthRequest="40" HeightRequest="40"
+                            Padding="0"
                             Background="{StaticResource CardSurface}"
                             Stroke="{StaticResource StrokeColor}"
                             StrokeThickness="1">

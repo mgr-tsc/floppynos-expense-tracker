@@ -33,6 +33,7 @@
 
                 <Border Grid.Column="0"
                         WidthRequest="40" HeightRequest="40"
+                        Padding="0"
                         Background="{StaticResource CardSurface}"
                         Stroke="{StaticResource StrokeColor}"
                         StrokeThickness="1">
@@ -145,6 +146,7 @@
                                                                VerticalOptions="Center">
                                             <!-- Edit -->
                                             <Border WidthRequest="30" HeightRequest="30"
+                                                    Padding="0"
                                                     Background="{StaticResource ElevatedSurface}"
                                                     StrokeThickness="0">
                                                 <Border.StrokeShape>
@@ -164,6 +166,7 @@
                                             </Border>
                                             <!-- Delete -->
                                             <Border WidthRequest="30" HeightRequest="30"
+                                                    Padding="0"
                                                     Background="{StaticResource ElevatedSurface}"
                                                     StrokeThickness="0">
                                                 <Border.StrokeShape>

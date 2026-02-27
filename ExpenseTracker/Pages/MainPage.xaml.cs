@@ -8,17 +8,21 @@ public partial class MainPage : ContentPage
         BindingContext = model;
     }
 
-    private void StatusFilter_SelectionChanged(object? sender,
-        Syncfusion.Maui.Toolkit.SegmentedControl.SelectionChangedEventArgs e)
+    private void OnChargesFilterTapped(object? sender, TappedEventArgs e)
     {
-        if (BindingContext is MainPageModel vm)
-            vm.SelectedStatusIndex = e.NewIndex ?? 0;
+        if (BindingContext is MainPageModel vm && e.Parameter is string s && int.TryParse(s, out var idx))
+            vm.SelectedStatusIndex = idx;
     }
 
-    private void PaymentStatusFilter_SelectionChanged(object? sender,
-        Syncfusion.Maui.Toolkit.SegmentedControl.SelectionChangedEventArgs e)
+    private void OnPaymentsFilterTapped(object? sender, TappedEventArgs e)
+    {
+        if (BindingContext is MainPageModel vm && e.Parameter is string s && int.TryParse(s, out var idx))
+            vm.SelectedPaymentStatusIndex = idx;
+    }
+
+    private async void OnRefreshing(object? sender, EventArgs e)
     {
         if (BindingContext is MainPageModel vm)
-            vm.SelectedPaymentStatusIndex = e.NewIndex ?? 0;
+            await vm.RefreshCommand.ExecuteAsync(null);
     }
 }

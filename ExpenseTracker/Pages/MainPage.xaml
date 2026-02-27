@@ -5,7 +5,6 @@
              xmlns:models="clr-namespace:ExpenseTracker.Models.Supabase"
              xmlns:controls="clr-namespace:ExpenseTracker.Pages.Controls"
              xmlns:pullToRefresh="clr-namespace:Syncfusion.Maui.Toolkit.PullToRefresh;assembly=Syncfusion.Maui.Toolkit"
-             xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:fonts="clr-namespace:ExpenseTracker.Resources.Fonts"
              x:Class="ExpenseTracker.Pages.MainPage"
@@ -34,15 +33,14 @@
             <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
-    
-    <Grid>
 
+    <Grid>
         <pullToRefresh:SfPullToRefresh
-            IsRefreshing="{Binding IsRefreshing}"
-            RefreshCommand="{Binding RefreshCommand}">
+            IsRefreshing="{Binding IsRefreshing, Mode=TwoWay}"
+            Refreshing="OnRefreshing">
             <pullToRefresh:SfPullToRefresh.PullableContent>
                 <ScrollView Padding="0,0,0,90">
-                    <VerticalStackLayout Padding="28,8,28,28" Spacing="24">
+                    <VerticalStackLayout Padding="20,8,20,28" Spacing="24">
 
                         <!-- Header: username + initials avatar -->
                         <controls:HeaderBar
@@ -60,7 +58,7 @@
 
                             <!-- Section header -->
                             <Grid ColumnDefinitions="*,Auto">
-                                <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                                <HorizontalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
                                     <HorizontalStackLayout.GestureRecognizers>
                                         <TapGestureRecognizer Command="{Binding ToggleChargesCommand}" />
                                     </HorizontalStackLayout.GestureRecognizers>
@@ -99,34 +97,89 @@
                             <!-- Collapsible content -->
                             <VerticalStackLayout IsVisible="{Binding IsChargesExpanded}" Spacing="14">
 
-                                <sf:SfSegmentedControl
-                                    x:Name="StatusFilter"
-                                    SelectedIndex="{Binding SelectedStatusIndex}"
-                                    SelectionChanged="StatusFilter_SelectionChanged"
-                                    HorizontalOptions="Fill"
-                                    CornerRadius="12"
-                                    SegmentHeight="36"
-                                    Background="{StaticResource CardSurface}"
-                                    Stroke="{StaticResource StrokeColor}"
-                                    StrokeThickness="1">
-                                    <sf:SfSegmentedControl.SelectionIndicatorSettings>
-                                        <sf:SelectionIndicatorSettings
-                                            Background="{StaticResource GoldAccent}"
-                                            SelectionIndicatorPlacement="Fill"
-                                            TextColor="{StaticResource AppBackground}" />
-                                    </sf:SfSegmentedControl.SelectionIndicatorSettings>
-                                    <sf:SfSegmentedControl.TextStyle>
-                                        <sf:SegmentTextStyle TextColor="{StaticResource DimmedText}" FontSize="13" />
-                                    </sf:SfSegmentedControl.TextStyle>
-                                    <sf:SfSegmentedControl.ItemsSource>
-                                        <x:Array Type="{x:Type sf:SfSegmentItem}">
-                                            <sf:SfSegmentItem Text="All" />
-                                            <sf:SfSegmentItem Text="Pending" />
-                                            <sf:SfSegmentItem Text="Approved" />
-                                            <sf:SfSegmentItem Text="Rejected" />
-                                        </x:Array>
-                                    </sf:SfSegmentedControl.ItemsSource>
-                                </sf:SfSegmentedControl>
+                                <!-- Charges filter: native Grid guarantees equal-width tabs at any screen size -->
+                                <Border Background="{StaticResource CardSurface}"
+                                        Stroke="{StaticResource StrokeColor}"
+                                        StrokeThickness="1"
+                                        Padding="3">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+                                    <Grid ColumnDefinitions="*,*,*,*">
+                                        <Border Grid.Column="0" Background="Transparent" StrokeThickness="0" Padding="0,8">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="9"/></Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding SelectedStatusIndex}" Value="0">
+                                                    <Setter Property="Background" Value="{StaticResource GoldAccent}"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="All" FontSize="11" HorizontalOptions="Center" TextColor="{StaticResource DimmedText}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding SelectedStatusIndex}" Value="0">
+                                                        <Setter Property="TextColor" Value="{StaticResource AppBackground}"/>
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnChargesFilterTapped" CommandParameter="0"/>
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                        <Border Grid.Column="1" Background="Transparent" StrokeThickness="0" Padding="0,8">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="9"/></Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding SelectedStatusIndex}" Value="1">
+                                                    <Setter Property="Background" Value="{StaticResource GoldAccent}"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="Pending" FontSize="11" HorizontalOptions="Center" TextColor="{StaticResource DimmedText}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding SelectedStatusIndex}" Value="1">
+                                                        <Setter Property="TextColor" Value="{StaticResource AppBackground}"/>
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnChargesFilterTapped" CommandParameter="1"/>
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                        <Border Grid.Column="2" Background="Transparent" StrokeThickness="0" Padding="0,8">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="9"/></Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding SelectedStatusIndex}" Value="2">
+                                                    <Setter Property="Background" Value="{StaticResource GoldAccent}"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="Approved" FontSize="11" HorizontalOptions="Center" TextColor="{StaticResource DimmedText}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding SelectedStatusIndex}" Value="2">
+                                                        <Setter Property="TextColor" Value="{StaticResource AppBackground}"/>
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnChargesFilterTapped" CommandParameter="2"/>
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                        <Border Grid.Column="3" Background="Transparent" StrokeThickness="0" Padding="0,8">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="9"/></Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding SelectedStatusIndex}" Value="3">
+                                                    <Setter Property="Background" Value="{StaticResource GoldAccent}"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="Rejected" FontSize="11" HorizontalOptions="Center" TextColor="{StaticResource DimmedText}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding SelectedStatusIndex}" Value="3">
+                                                        <Setter Property="TextColor" Value="{StaticResource AppBackground}"/>
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnChargesFilterTapped" CommandParameter="3"/>
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                    </Grid>
+                                </Border>
 
                                 <VerticalStackLayout Spacing="12"
                                     BindableLayout.ItemsSource="{Binding Expenses}">
@@ -168,7 +221,7 @@
                                            VerticalOptions="Center" />
                                 </HorizontalStackLayout>
                                 <Button Grid.Column="1"
-                                        Text="+ ADD"
+                                        Text="+ NEW"
                                         Command="{Binding AddPaymentCommand}"
                                         IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                                         BackgroundColor="Transparent"
@@ -184,34 +237,89 @@
                             <!-- Collapsible content -->
                             <VerticalStackLayout IsVisible="{Binding IsPaymentsExpanded}" Spacing="14">
 
-                                <sf:SfSegmentedControl
-                                    x:Name="PaymentStatusFilter"
-                                    SelectedIndex="{Binding SelectedPaymentStatusIndex}"
-                                    SelectionChanged="PaymentStatusFilter_SelectionChanged"
-                                    HorizontalOptions="Fill"
-                                    CornerRadius="12"
-                                    SegmentHeight="36"
-                                    Background="{StaticResource CardSurface}"
-                                    Stroke="{StaticResource StrokeColor}"
-                                    StrokeThickness="1">
-                                    <sf:SfSegmentedControl.SelectionIndicatorSettings>
-                                        <sf:SelectionIndicatorSettings
-                                            Background="{StaticResource GoldAccent}"
-                                            SelectionIndicatorPlacement="Fill"
-                                            TextColor="{StaticResource AppBackground}" />
-                                    </sf:SfSegmentedControl.SelectionIndicatorSettings>
-                                    <sf:SfSegmentedControl.TextStyle>
-                                        <sf:SegmentTextStyle TextColor="{StaticResource DimmedText}" FontSize="13" />
-                                    </sf:SfSegmentedControl.TextStyle>
-                                    <sf:SfSegmentedControl.ItemsSource>
-                                        <x:Array Type="{x:Type sf:SfSegmentItem}">
-                                            <sf:SfSegmentItem Text="All" />
-                                            <sf:SfSegmentItem Text="Pending" />
-                                            <sf:SfSegmentItem Text="Approved" />
-                                            <sf:SfSegmentItem Text="Rejected" />
-                                        </x:Array>
-                                    </sf:SfSegmentedControl.ItemsSource>
-                                </sf:SfSegmentedControl>
+                                <!-- Payments filter: native Grid guarantees equal-width tabs at any screen size -->
+                                <Border Background="{StaticResource CardSurface}"
+                                        Stroke="{StaticResource StrokeColor}"
+                                        StrokeThickness="1"
+                                        Padding="3">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+                                    <Grid ColumnDefinitions="*,*,*,*">
+                                        <Border Grid.Column="0" Background="Transparent" StrokeThickness="0" Padding="0,8">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="9"/></Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding SelectedPaymentStatusIndex}" Value="0">
+                                                    <Setter Property="Background" Value="{StaticResource GoldAccent}"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="All" FontSize="11" HorizontalOptions="Center" TextColor="{StaticResource DimmedText}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding SelectedPaymentStatusIndex}" Value="0">
+                                                        <Setter Property="TextColor" Value="{StaticResource AppBackground}"/>
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnPaymentsFilterTapped" CommandParameter="0"/>
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                        <Border Grid.Column="1" Background="Transparent" StrokeThickness="0" Padding="0,8">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="9"/></Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding SelectedPaymentStatusIndex}" Value="1">
+                                                    <Setter Property="Background" Value="{StaticResource GoldAccent}"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="Pending" FontSize="11" HorizontalOptions="Center" TextColor="{StaticResource DimmedText}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding SelectedPaymentStatusIndex}" Value="1">
+                                                        <Setter Property="TextColor" Value="{StaticResource AppBackground}"/>
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnPaymentsFilterTapped" CommandParameter="1"/>
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                        <Border Grid.Column="2" Background="Transparent" StrokeThickness="0" Padding="0,8">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="9"/></Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding SelectedPaymentStatusIndex}" Value="2">
+                                                    <Setter Property="Background" Value="{StaticResource GoldAccent}"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="Approved" FontSize="11" HorizontalOptions="Center" TextColor="{StaticResource DimmedText}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding SelectedPaymentStatusIndex}" Value="2">
+                                                        <Setter Property="TextColor" Value="{StaticResource AppBackground}"/>
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnPaymentsFilterTapped" CommandParameter="2"/>
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                        <Border Grid.Column="3" Background="Transparent" StrokeThickness="0" Padding="0,8">
+                                            <Border.StrokeShape><RoundRectangle CornerRadius="9"/></Border.StrokeShape>
+                                            <Border.Triggers>
+                                                <DataTrigger TargetType="Border" Binding="{Binding SelectedPaymentStatusIndex}" Value="3">
+                                                    <Setter Property="Background" Value="{StaticResource GoldAccent}"/>
+                                                </DataTrigger>
+                                            </Border.Triggers>
+                                            <Label Text="Rejected" FontSize="11" HorizontalOptions="Center" TextColor="{StaticResource DimmedText}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding SelectedPaymentStatusIndex}" Value="3">
+                                                        <Setter Property="TextColor" Value="{StaticResource AppBackground}"/>
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Border.GestureRecognizers>
+                                                <TapGestureRecognizer Tapped="OnPaymentsFilterTapped" CommandParameter="3"/>
+                                            </Border.GestureRecognizers>
+                                        </Border>
+                                    </Grid>
+                                </Border>
 
                                 <VerticalStackLayout Spacing="12"
                                     BindableLayout.ItemsSource="{Binding Payments}">

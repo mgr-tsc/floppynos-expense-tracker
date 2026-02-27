@@ -115,17 +115,35 @@ public partial class MainPageModel : ObservableObject
             UserName = user.Name ?? user.Email ?? "User";
             UserInitials = ComputeInitials(UserName);
         }
-        await LoadChargesAsync();
+        _ = await LoadDashboardAsync();
     }
 
     [RelayCommand]
     private async Task Refresh()
     {
-        await LoadChargesAsync();
-        IsRefreshing = false;
+        IsRefreshing = true;
+        try
+        {
+            var refreshTask = LoadDashboardAsync();
+            var timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
+            var completed = await Task.WhenAny(refreshTask, timeoutTask);
+
+            if (completed == timeoutTask)
+                await AppShell.DisplayToastAsync("Refresh timed out. Please try again.");
+            else if (!await refreshTask)
+                await AppShell.DisplayToastAsync("Failed to refresh data. Please try again.");
+        }
+        catch (OperationCanceledException)
+        {
+            await AppShell.DisplayToastAsync("Refresh timed out. Please try again.");
+        }
+        finally
+        {
+            MainThread.BeginInvokeOnMainThread(() => IsRefreshing = false);
+        }
     }
 
-    private async Task LoadChargesAsync()
+    private async Task<bool> LoadDashboardAsync()
     {
         try
         {
@@ -133,8 +151,7 @@ public partial class MainPageModel : ObservableObject
             await ResolveHouseholdAsync();
             if (_householdId > 0)
             {
-                _allExpenses = await _chargeRepository.ListByHouseholdAsync(_householdId);
-                FilterExpenses();
+                await LoadChargesAsync();
                 await LoadBalanceAsync();
                 await LoadPaymentsAsync();
             }
@@ -145,10 +162,12 @@ public partial class MainPageModel : ObservableObject
                 Expenses = [];
                 Payments = [];
             }
+            return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to load charges");
+            _logger.LogError(ex, "Failed to load dashboard");
+            return false;
         }
         finally
         {
@@ -156,17 +175,16 @@ public partial class MainPageModel : ObservableObject
         }
     }
 
+    private async Task LoadChargesAsync()
+    {
+        _allExpenses = await _chargeRepository.ListByHouseholdAsync(_householdId);
+        FilterExpenses();
+    }
+
     private async Task LoadPaymentsAsync()
     {
-        try
-        {
-            _allPayments = await _paymentRepository.ListByHouseholdAsync(_householdId);
-            FilterPayments();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to load payments");
-        }
+        _allPayments = await _paymentRepository.ListByHouseholdAsync(_householdId);
+        FilterPayments();
     }
 
     private async Task ResolveHouseholdAsync()
