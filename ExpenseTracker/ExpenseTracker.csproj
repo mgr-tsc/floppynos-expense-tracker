@@ -23,7 +23,7 @@
         <ApplicationTitle>ExpenseTracker</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>ExpenseTracker</ApplicationId>
+        <ApplicationId>com.companyname.ExpenseTracker.ExpenseTracker</ApplicationId>
 
         <!-- Versions -->
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -37,6 +37,14 @@
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">21.0</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</SupportedOSPlatformVersion>
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+    </PropertyGroup>
+
+    <!-- iOS device signing -->
+    <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
+        <CodesignKey>Apple Development: marcoguerod@gmail.com (9G45HZ79H6)</CodesignKey>
+        <CodesignProvision>iOS Team Provisioning Profile: com.companyname.ExpenseTracker.ExpenseTracker</CodesignProvision>
+        <ProvisioningType>Automatic</ProvisioningType>
+        <CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
     </PropertyGroup>
 
     <!-- Hot Reload for Debug builds -->
