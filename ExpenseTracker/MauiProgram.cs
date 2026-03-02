@@ -1,10 +1,7 @@
 using CommunityToolkit.Maui;
-using ExpenseTracker.Data.Repositories;
 using ExpenseTracker.Resources.Fonts;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Toolkit.Hosting;
-using ExpenseTracker.Services;
-using Supabase;
 using ExpenseTracker.Services.Interfaces;
 
 namespace ExpenseTracker;

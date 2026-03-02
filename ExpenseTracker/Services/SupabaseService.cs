@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Text.Json;
 using ExpenseTracker.Models.Supabase;
 using ExpenseTracker.Services.Interfaces;
-using ExpenseTracker.Models;
 
 namespace ExpenseTracker.Services;
 
@@ -123,6 +122,12 @@ public class SupabaseService
 
             if (string.IsNullOrEmpty(content))
                 return null;
+
+            if (content.TrimStart().StartsWith('['))
+            {
+                var list = Newtonsoft.Json.JsonConvert.DeserializeObject<List<BalanceData>>(content);
+                return list?.FirstOrDefault();
+            }
 
             return Newtonsoft.Json.JsonConvert.DeserializeObject<BalanceData>(content);
         }

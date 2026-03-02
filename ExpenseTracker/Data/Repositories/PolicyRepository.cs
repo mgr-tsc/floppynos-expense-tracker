@@ -1,6 +1,5 @@
 using ExpenseTracker.Models.Supabase;
 using Microsoft.Extensions.Logging;
-using Supabase.Postgrest;
 
 namespace ExpenseTracker.Data.Repositories;
 

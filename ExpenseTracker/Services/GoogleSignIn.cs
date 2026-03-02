@@ -1,10 +1,8 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Authentication;
-using System.Text.Json;
 using ExpenseTracker.Services.Interfaces;
 using Microsoft.Extensions.Logging;
-using Supabase.Gotrue;
 
 namespace ExpenseTracker.Services;
 

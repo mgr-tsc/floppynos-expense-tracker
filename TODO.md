@@ -4,19 +4,22 @@ Known issues and pending features, in rough priority order.
 
 ---
 
+
 ## Bugs
 
-
-### [BUG-03] Balance calculations are incorrect
-**Affected pages:** `MainPage` (via `BalanceView`)
-**Description:** The "who owes who" figures shown in the balance card do not reflect actual charge/payment data. Totals appear wrong or static. Root cause likely spans multiple layers:
-- `BalanceData` computation logic in `MainPageModel` may not aggregate correctly across all charges and payments.
-- Supabase RLS policies on CHARGE and PAYMENT tables may prevent the current user from reading the partner's records, causing one-sided totals.
-- Settlement logic (approved payments reducing the owed amount) may not be applied.
-**Fix area:** Audit `LoadBalanceAsync()` in `MainPageModel.cs`. Verify RLS allows both household members to read each other's records. Add integration checks for edge cases (no charges, unequal splits, partial payments).
+### [BUG-04] Future dates allowed on Charge and Payment entry
+**Affected pages:** `ExpenseDetailPage`, `PaymentDetailPage`
+**Description:** The `DatePicker` on both detail pages allows the user to select any future date. The maximum allowed date should be today.
+**Fix area:** In `ExpenseDetailPageModel` and `PaymentDetailPageModel`, validate that `Date <= DateTime.Today` before saving. In the XAML `DatePicker`, set `MaximumDate` to `DateTime.Today` to block selection at the UI level.
 
 ---
 
+### [BUG-04b] * No DB-level constraint preventing future dates on CHARGE and PAYMENT
+**Description:** Even with app-level validation in place, there is no database constraint stopping a future `date` value from being inserted directly (e.g. via API or SQL editor).
+**Fix area:** Add a `CHECK` constraint to the CHARGE and PAYMENT tables in Supabase: `CHECK (date <= CURRENT_DATE)`.
+**Note:** Low priority — app-level validation (BUG-04) is sufficient for normal use.
+
+---
 
 ## Missing Features
 
@@ -40,6 +43,22 @@ Known issues and pending features, in rough priority order.
 ---
 
 ## Design Tasks
+
+### [DESIGN-03] Sync Pencil design file with current MainPage implementation
+**Description:** The Pencil design tool is out of date and does not reflect the MainPage as it currently exists (dark theme, CustomTabBar, filter tabs, BalanceView, collapsible Charges/Payments sections). Update the design file to match the implemented UI so it can be used as the source of truth for future design decisions.
+**Deliverable:** Updated Pencil screens for MainPage matching the live implementation.
+
+---
+
+### [DESIGN-04] Date filtering for Charges and Payments on MainPage
+**Page:** `MainPage` / `MainPageModel`
+**Description:** Add the ability to filter the Charges and Payments lists by date range. By default, only records from the **last 2 months** should be loaded. Users should be able to adjust the date range via a filter control (e.g. a date range picker or preset chips: Last Month / Last 3 Months / All Time).
+**Fix area:**
+- `MainPageModel`: apply a default date filter (`DateFrom = DateTime.Now.AddMonths(-2)`) when calling `ListByHouseholdAsync`. Add observable `DateFrom` / `DateTo` properties and re-filter on change.
+- `ChargeRepository` / `PaymentRepository`: add an overload or parameter to `ListByHouseholdAsync` that accepts a date range.
+- `MainPage.xaml`: add date filter UI above or alongside the status filter tabs.
+
+---
 
 ### [DESIGN-02] Design app icon
 **Assets:** `Resources/AppIcon/appicon.svg` (background) + `Resources/AppIcon/appiconfg.svg` (foreground)

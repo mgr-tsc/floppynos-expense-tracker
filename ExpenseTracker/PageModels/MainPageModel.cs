@@ -11,6 +11,7 @@ public partial class MainPageModel : ObservableObject
     private bool _isNavigatedTo;
     private bool _dataLoaded;
     private long _householdId;
+    private HouseHoldDto? _household;
     private List<ChargeDto> _allExpenses = [];
     private List<PaymentDto> _allPayments = [];
     private readonly ModalErrorHandler _errorHandler;
@@ -197,6 +198,7 @@ public partial class MainPageModel : ObservableObject
         var household = await _householdRepository.GetByUserIdAsync(userId);
         if (household is not null)
         {
+            _household = household;
             _householdId = household.Id;
             HouseholdName = $"#{household.Code}";
         }
@@ -209,6 +211,11 @@ public partial class MainPageModel : ObservableObject
             var balance = await _supabaseService.GetHouseholdBalanceAsync(_householdId);
             if (balance is not null)
             {
+                var userId = _supabaseService.GetCurrentUserId();
+                var currentUserIsA = _household?.UserAIdFk == userId;
+                balance.CurrentUserIsA = currentUserIsA;
+                balance.UserAName = currentUserIsA ? UserName : "Partner";
+                balance.UserBName = currentUserIsA ? "Partner" : UserName;
                 Balance = balance;
             }
         }

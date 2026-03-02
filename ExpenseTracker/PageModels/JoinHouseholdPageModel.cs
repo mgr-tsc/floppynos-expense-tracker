@@ -1,6 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using ExpenseTracker.Data.Repositories;
 using Microsoft.Extensions.Logging;
 
 namespace ExpenseTracker.PageModels;
