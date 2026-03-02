@@ -4,6 +4,7 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 .claude/
+SQL/*
 
 # Secrets — never commit
 ExpenseTracker/Resources/Raw/supabase.env
