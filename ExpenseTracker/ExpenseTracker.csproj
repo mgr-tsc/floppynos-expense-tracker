@@ -39,10 +39,8 @@
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
     </PropertyGroup>
 
-    <!-- iOS device signing -->
+    <!-- iOS device signing — personal values live in ExpenseTracker.csproj.user (gitignored) -->
     <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
-        <CodesignKey>Apple Development: marcoguerod@gmail.com (9G45HZ79H6)</CodesignKey>
-        <CodesignProvision>iOS Team Provisioning Profile: com.companyname.ExpenseTracker.ExpenseTracker</CodesignProvision>
         <ProvisioningType>Automatic</ProvisioningType>
         <CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
     </PropertyGroup>

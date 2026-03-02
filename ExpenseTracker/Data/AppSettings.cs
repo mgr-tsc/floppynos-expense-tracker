@@ -28,7 +28,7 @@ public static class AppSettings
     /// <summary>
     /// 
     /// </summary>
-    public static string GoogleWebClientId { get; private set; } = "390961512533-nepig26odttd5dgj6dvmntkvjru0k3g7.apps.googleusercontent.com";
+    public static string GoogleWebClientId { get; private set; } = string.Empty;
     
     /// <summary>
     ///
@@ -115,6 +115,9 @@ public static class AppSettings
                         break;
                     case "SUPABASE_ANON_KEY":
                         SupabaseAnonKey = value;
+                        break;
+                    case "GOOGLE_WEB_CLIENT_ID":
+                        GoogleWebClientId = value;
                         break;
                 }
             }

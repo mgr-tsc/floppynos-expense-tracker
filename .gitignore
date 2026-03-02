@@ -4,4 +4,21 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 .claude/
+
+# Secrets — never commit
 ExpenseTracker/Resources/Raw/supabase.env
+
+# Local developer overrides (signing identity, personal paths)
+*.csproj.user
+*.user
+*.sln.user
+
+# IDE folders
+.vs/
+.idea/
+
+# Signing certificates
+*.pfx
+*.p12
+*.pem
+*.key
