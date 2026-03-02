@@ -4,20 +4,12 @@ Known issues and pending features, in rough priority order.
 
 ---
 
-
 ## Bugs
-
-### ~~[BUG-04] Future dates allowed on Charge and Payment entry~~ ✓ Fixed
-**Affected pages:** `ExpenseDetailPage`, `PaymentDetailPage`
-**Description:** The `DatePicker` on both detail pages allows the user to select any future date. The maximum allowed date should be today.
-**Fix area:** In `ExpenseDetailPageModel` and `PaymentDetailPageModel`, validate that `Date <= DateTime.Today` before saving. In the XAML `DatePicker`, set `MaximumDate` to `DateTime.Today` to block selection at the UI level.
-
----
 
 ### [BUG-04b] * No DB-level constraint preventing future dates on CHARGE and PAYMENT
 **Description:** Even with app-level validation in place, there is no database constraint stopping a future `date` value from being inserted directly (e.g. via API or SQL editor).
 **Fix area:** Add a `CHECK` constraint to the CHARGE and PAYMENT tables in Supabase: `CHECK (date <= CURRENT_DATE)`.
-**Note:** Low priority — app-level validation (BUG-04) is sufficient for normal use.
+**Note:** Low priority — app-level validation is sufficient for normal use.
 
 ---
 
@@ -44,6 +36,13 @@ Known issues and pending features, in rough priority order.
 
 ## Design Tasks
 
+### [DESIGN-02] Design app icon
+**Assets:** `Resources/AppIcon/appicon.svg` (background) + `Resources/AppIcon/appiconfg.svg` (foreground)
+**Description:** The current app icon is the default .NET MAUI template icon. A custom icon is needed that reflects the app identity — ideally using the gold `#D4AF37` accent on a dark `#111111` background.
+**Deliverable:** Replace `appicon.svg` and/or `appiconfg.svg` with a custom design. The background color in the csproj is currently `#17171a` (update to `#111111` when replacing). Rebuild required.
+
+---
+
 ### [DESIGN-03] Sync Pencil design file with current MainPage implementation
 **Description:** The Pencil design tool is out of date and does not reflect the MainPage as it currently exists (dark theme, CustomTabBar, filter tabs, BalanceView, collapsible Charges/Payments sections). Update the design file to match the implemented UI so it can be used as the source of truth for future design decisions.
 **Deliverable:** Updated Pencil screens for MainPage matching the live implementation.
@@ -57,13 +56,6 @@ Known issues and pending features, in rough priority order.
 - `MainPageModel`: apply a default date filter (`DateFrom = DateTime.Now.AddMonths(-2)`) when calling `ListByHouseholdAsync`. Add observable `DateFrom` / `DateTo` properties and re-filter on change.
 - `ChargeRepository` / `PaymentRepository`: add an overload or parameter to `ListByHouseholdAsync` that accepts a date range.
 - `MainPage.xaml`: add date filter UI above or alongside the status filter tabs.
-
----
-
-### [DESIGN-02] Design app icon
-**Assets:** `Resources/AppIcon/appicon.svg` (background) + `Resources/AppIcon/appiconfg.svg` (foreground)
-**Description:** The current app icon is the default .NET MAUI template icon. A custom icon is needed that reflects the app identity — ideally using the gold `#D4AF37` accent on a dark `#111111` background.
-**Deliverable:** Replace `appicon.svg` and/or `appiconfg.svg` with a custom design. The background color in the csproj is currently `#17171a` (update to `#111111` when replacing). Rebuild required.
 
 ---
 
