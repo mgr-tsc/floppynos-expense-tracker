@@ -72,6 +72,8 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     private string _pageTitle = "NEW CHARGE";
 
+    public DateTime MaxDate => DateTime.Today;
+
     public ExpenseDetailPageModel(
         ChargeRepository chargeRepository,
         CardRepository cardRepository,
@@ -332,6 +334,12 @@ public partial class ExpenseDetailPageModel : ObservableObject, IQueryAttributab
         if (SplitOptionIndex < 0 || SplitOptionIndex >= SplitOptions.Count)
         {
             ErrorMessage = "Please select a split policy";
+            return;
+        }
+
+        if (Date > DateTime.Today)
+        {
+            ErrorMessage = "Date cannot be in the future";
             return;
         }
 

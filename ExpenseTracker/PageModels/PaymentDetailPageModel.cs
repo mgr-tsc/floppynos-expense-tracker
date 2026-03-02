@@ -57,6 +57,8 @@ public partial class PaymentDetailPageModel : ObservableObject, IQueryAttributab
     [ObservableProperty]
     private string _pageTitle = "NEW PAYMENT";
 
+    public DateTime MaxDate => DateTime.Today;
+
     public PaymentDetailPageModel(
         PaymentRepository paymentRepository,
         HouseholdRepository householdRepository,
@@ -230,6 +232,12 @@ public partial class PaymentDetailPageModel : ObservableObject, IQueryAttributab
         if (Amount <= 0)
         {
             ErrorMessage = "Please enter a valid amount";
+            return;
+        }
+
+        if (Date > DateTime.Today)
+        {
+            ErrorMessage = "Date cannot be in the future";
             return;
         }
 

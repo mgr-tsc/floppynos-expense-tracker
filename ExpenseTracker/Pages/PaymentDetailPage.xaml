@@ -123,6 +123,7 @@
                         <Grid RowDefinitions="52,2" BackgroundColor="{StaticResource CardSurface}">
                             <DatePicker Grid.Row="0"
                                         Date="{Binding Date}"
+                                        MaximumDate="{Binding MaxDate}"
                                         IsEnabled="{Binding IsEditable}"
                                         BackgroundColor="Transparent"
                                         TextColor="White"

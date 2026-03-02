@@ -7,7 +7,7 @@ Known issues and pending features, in rough priority order.
 
 ## Bugs
 
-### [BUG-04] Future dates allowed on Charge and Payment entry
+### ~~[BUG-04] Future dates allowed on Charge and Payment entry~~ ✓ Fixed
 **Affected pages:** `ExpenseDetailPage`, `PaymentDetailPage`
 **Description:** The `DatePicker` on both detail pages allows the user to select any future date. The maximum allowed date should be today.
 **Fix area:** In `ExpenseDetailPageModel` and `PaymentDetailPageModel`, validate that `Date <= DateTime.Today` before saving. In the XAML `DatePicker`, set `MaximumDate` to `DateTime.Today` to block selection at the UI level.
