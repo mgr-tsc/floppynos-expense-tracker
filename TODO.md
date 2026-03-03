@@ -34,15 +34,6 @@ Known issues and pending features, in rough priority order.
 
 ---
 
-## Design Tasks
-
-### [DESIGN-02] Design app icon
-**Assets:** `Resources/AppIcon/appicon.svg` (background) + `Resources/AppIcon/appiconfg.svg` (foreground)
-**Description:** The current app icon is the default .NET MAUI template icon. A custom icon is needed that reflects the app identity — ideally using the gold `#D4AF37` accent on a dark `#111111` background.
-**Deliverable:** Replace `appicon.svg` and/or `appiconfg.svg` with a custom design. The background color in the csproj is currently `#17171a` (update to `#111111` when replacing). Rebuild required.
-
----
-
 
 ## Notes
 - RLS policies must be verified for all new DB operations (charges, payments, households). No `SECURITY DEFINER` bypasses.
