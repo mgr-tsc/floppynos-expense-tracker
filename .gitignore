@@ -18,7 +18,7 @@ ExpenseTracker/Resources/Raw/supabase.env
 # IDE folders
 .vs/
 .idea/
-
+Design/
 # Signing certificates
 *.pfx
 *.p12

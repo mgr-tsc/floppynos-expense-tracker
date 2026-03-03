@@ -43,12 +43,6 @@ Known issues and pending features, in rough priority order.
 
 ---
 
-### [DESIGN-03] Sync Pencil design file with current MainPage implementation
-**Description:** The Pencil design tool is out of date and does not reflect the MainPage as it currently exists (dark theme, CustomTabBar, filter tabs, BalanceView, collapsible Charges/Payments sections). Update the design file to match the implemented UI so it can be used as the source of truth for future design decisions.
-**Deliverable:** Updated Pencil screens for MainPage matching the live implementation.
-
----
-
 ### [DESIGN-04] Date filtering for Charges and Payments on MainPage
 **Page:** `MainPage` / `MainPageModel`
 **Description:** Add the ability to filter the Charges and Payments lists by date range. By default, only records from the **last 2 months** should be loaded. Users should be able to adjust the date range via a filter control (e.g. a date range picker or preset chips: Last Month / Last 3 Months / All Time).
