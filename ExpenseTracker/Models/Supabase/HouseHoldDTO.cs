@@ -15,6 +15,9 @@ public class HouseHoldDto: BaseModel
     [Column("code")]
     public long Code { get; set; }
 
+    [Column("name")]
+    public string Name { get; set; } = string.Empty;
+
     [Column("enabled")]
     public bool Enabled { get; set; }
 

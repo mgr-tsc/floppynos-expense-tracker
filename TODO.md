@@ -42,15 +42,28 @@ Known issues and pending features, in rough priority order.
 
 ---
 
-### [FEAT-04] Household must have a Name; display it in the HouseholdSwitcher
-**Page:** `HouseholdSetupPage`, `MainPage` (`HouseholdSwitcher` control)
-**Description:** The HOUSEHOLD table needs a `name` column. The user must provide this name when creating a household. It is what gets displayed in the `HouseholdSwitcher` on `MainPage` (currently showing the household `#Code`).
+### [FEAT-05] Invite partner via Copy Code CTA
+**Page:** Settings / `ManageProfilesPage` *(tentative)*
+**Description:** Allow a household owner to share their household code so a second user can join. The feature has two parts:
+
+**Part 1 — Supabase helper function**
+Create a boolean RPC `is_household_full` that returns `true` when both `user_a_id_fk` and `user_b_id_fk` are non-null, and `false` otherwise. Accept either the household `id` (bigint) or `name` (text) as the argument (two overloads or a single function with optional params — TBD):
+```sql
+-- Example signature (by id)
+CREATE OR REPLACE FUNCTION public.is_household_full(p_household_id bigint)
+RETURNS boolean ...
+```
+
+**Part 2 — Copy Code CTA**
+Add a "Copy Code" button to the Settings page (or wherever household info is surfaced). The button:
+- Is **enabled** only when `is_household_full` returns `false` (household has an open slot)
+- Copies `household.Code` to the clipboard when tapped
+- Shows a brief confirmation (e.g. toast "Code copied!")
+
 **Fix area:**
-- **Supabase:** add `name TEXT NOT NULL` column to the `HOUSEHOLD` table. Update RLS as needed.
-- `HouseHoldDto`: add `[Column("name")] public string Name { get; set; }` property.
-- `HouseholdRepository`: include `name` in `INSERT` and `SELECT` statements.
-- `HouseholdSetupPage` / `HouseholdSetupPageModel`: add a Name input field; validate non-empty before creating.
-- `MainPageModel` / `HouseholdSwitcher`: display `household.Name` instead of `#Code`.
+- **Supabase:** implement `is_household_full` RPC with RLS-safe access (caller must belong to the household).
+- `SupabaseService`: add `IsHouseholdFullAsync(long householdId)` wrapping the RPC call.
+- `ManageProfilesPage` / its PageModel *(page TBD)*: call `IsHouseholdFullAsync`, expose `CanCopyCode` bool, wire up `CopyCodeCommand` using `Clipboard.SetTextAsync`.
 
 ---
 

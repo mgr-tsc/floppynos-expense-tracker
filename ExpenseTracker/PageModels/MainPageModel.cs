@@ -255,7 +255,9 @@ public partial class MainPageModel : ObservableObject
         {
             _household = household;
             _householdId = household.Id;
-            HouseholdName = $"#{household.Code}";
+            HouseholdName = !string.IsNullOrWhiteSpace(household.Name)
+                ? household.Name
+                : $"#{household.Code}";
         }
     }
 
