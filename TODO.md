@@ -22,6 +22,38 @@ Known issues and pending features, in rough priority order.
 
 ---
 
+### [FEAT-02] User can delete a Rejected charge they created
+**Page:** `MainPage` / `ExpenseDetailPage`
+**Description:** A user should be able to delete a charge if and only if: (1) the charge status is `Rejected`, and (2) the current user is the charge creator (`charge.UserIdFk == currentUserId`). No other status should allow deletion.
+**Fix area:**
+- `ExpenseDetailPageModel`: add a `DeleteChargeCommand` guarded by the two conditions above. Call `ChargeRepository.DeleteAsync(id)` then navigate back.
+- `MainPage` / `ExpenseItemView`: optionally surface a delete affordance (e.g. swipe or a button visible only when both conditions are met).
+- Ensure RLS on the CHARGE table allows `DELETE` only for the row owner.
+
+---
+
+### [FEAT-03] A user can belong to multiple households; load the first one on login
+**Page:** `MainPage` / `MainPageModel`, `HouseholdRepository`
+**Description:** The data model and app logic must support a user appearing in more than one household (as `user_a_id_fk` or `user_b_id_fk`). On login, the first household returned from the DB is loaded by default. This is the foundation for the household switcher on `MainPage` — letting the user switch context and see their balance against a different partner.
+**Fix area:**
+- `HouseholdRepository`: change `GetByUserIdAsync` to `ListByUserIdAsync`, returning `List<HouseHoldDto>` ordered by `id` ascending (first = default).
+- `MainPageModel`: store the full list; expose an `ActiveHousehold` and a `SwitchHouseholdCommand` for the switcher UI.
+- `HouseholdSwitcher` control: wire up to allow switching when multiple households are available.
+
+---
+
+### [FEAT-04] Household must have a Name; display it in the HouseholdSwitcher
+**Page:** `HouseholdSetupPage`, `MainPage` (`HouseholdSwitcher` control)
+**Description:** The HOUSEHOLD table needs a `name` column. The user must provide this name when creating a household. It is what gets displayed in the `HouseholdSwitcher` on `MainPage` (currently showing the household `#Code`).
+**Fix area:**
+- **Supabase:** add `name TEXT NOT NULL` column to the `HOUSEHOLD` table. Update RLS as needed.
+- `HouseHoldDto`: add `[Column("name")] public string Name { get; set; }` property.
+- `HouseholdRepository`: include `name` in `INSERT` and `SELECT` statements.
+- `HouseholdSetupPage` / `HouseholdSetupPageModel`: add a Name input field; validate non-empty before creating.
+- `MainPageModel` / `HouseholdSwitcher`: display `household.Name` instead of `#Code`.
+
+---
+
 ## Pending Pages / Modules
 
 ### [PAGE-01] Settings page not yet implemented
