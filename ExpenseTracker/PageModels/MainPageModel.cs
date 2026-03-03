@@ -8,12 +8,17 @@ namespace ExpenseTracker.PageModels;
 
 public partial class MainPageModel : ObservableObject
 {
+    private static readonly DateTime _defaultFromDate = new DateTime(DateTime.Now.Year, 1, 1);
+    private static readonly DateTime _defaultToDate   = DateTime.Now.Date;
+
     private bool _isNavigatedTo;
     private bool _dataLoaded;
     private long _householdId;
     private HouseHoldDto? _household;
     private List<ChargeDto> _allExpenses = [];
     private List<PaymentDto> _allPayments = [];
+
+    public event EventHandler? FilterPanelCloseRequested;
     private readonly ModalErrorHandler _errorHandler;
     private readonly ILogger<MainPageModel> _logger;
     private readonly ISigInInThirdParty _sigInInThirdParty;
@@ -35,6 +40,11 @@ public partial class MainPageModel : ObservableObject
     [ObservableProperty] private int _selectedPaymentStatusIndex = 1; // Default: Pending
     [ObservableProperty] private bool _isChargesExpanded = true;
     [ObservableProperty] private bool _isPaymentsExpanded = true;
+    [ObservableProperty] private DateTime _filterFromDate  = new DateTime(DateTime.Now.Year, 1, 1);
+    [ObservableProperty] private DateTime _filterToDate    = DateTime.Now.Date;
+    [ObservableProperty] private string   _filterMinAmount = string.Empty;
+    [ObservableProperty] private string   _filterMaxAmount = string.Empty;
+    [ObservableProperty] private bool     _isFilterActive  = false;
 
     public MainPageModel(ModalErrorHandler errorHandler,
                         ILogger<MainPageModel> logger,
@@ -59,24 +69,46 @@ public partial class MainPageModel : ObservableObject
 
     private void FilterExpenses()
     {
-        Expenses = SelectedStatusIndex switch
+        var filtered = SelectedStatusIndex switch
         {
-            1 => _allExpenses.Where(e => string.Equals(e.Status?.Trim(), "pending",  StringComparison.OrdinalIgnoreCase)).ToList(),
-            2 => _allExpenses.Where(e => string.Equals(e.Status?.Trim(), "approved", StringComparison.OrdinalIgnoreCase)).ToList(),
-            3 => _allExpenses.Where(e => string.Equals(e.Status?.Trim(), "rejected", StringComparison.OrdinalIgnoreCase)).ToList(),
-            _ => _allExpenses.ToList(),
+            1 => _allExpenses.Where(e => string.Equals(e.Status?.Trim(), "pending",  StringComparison.OrdinalIgnoreCase)),
+            2 => _allExpenses.Where(e => string.Equals(e.Status?.Trim(), "approved", StringComparison.OrdinalIgnoreCase)),
+            3 => _allExpenses.Where(e => string.Equals(e.Status?.Trim(), "rejected", StringComparison.OrdinalIgnoreCase)),
+            _ => _allExpenses.AsEnumerable(),
         };
+        Expenses = ApplyDateAmountToExpenses(filtered).ToList();
     }
 
     private void FilterPayments()
     {
-        Payments = SelectedPaymentStatusIndex switch
+        var filtered = SelectedPaymentStatusIndex switch
         {
-            1 => _allPayments.Where(p => string.Equals(p.Status?.Trim(), "pending",  StringComparison.OrdinalIgnoreCase)).ToList(),
-            2 => _allPayments.Where(p => string.Equals(p.Status?.Trim(), "approved", StringComparison.OrdinalIgnoreCase)).ToList(),
-            3 => _allPayments.Where(p => string.Equals(p.Status?.Trim(), "rejected", StringComparison.OrdinalIgnoreCase)).ToList(),
-            _ => _allPayments.ToList(),
+            1 => _allPayments.Where(p => string.Equals(p.Status?.Trim(), "pending",  StringComparison.OrdinalIgnoreCase)),
+            2 => _allPayments.Where(p => string.Equals(p.Status?.Trim(), "approved", StringComparison.OrdinalIgnoreCase)),
+            3 => _allPayments.Where(p => string.Equals(p.Status?.Trim(), "rejected", StringComparison.OrdinalIgnoreCase)),
+            _ => _allPayments.AsEnumerable(),
         };
+        Payments = ApplyDateAmountToPayments(filtered).ToList();
+    }
+
+    private IEnumerable<ChargeDto> ApplyDateAmountToExpenses(IEnumerable<ChargeDto> source)
+    {
+        var from = FilterFromDate;
+        var to   = FilterToDate.Date.AddDays(1).AddTicks(-1);
+        source = source.Where(e => { var d = e.TransactionDate ?? e.CreatedAt.DateTime; return d >= from && d <= to; });
+        if (decimal.TryParse(FilterMinAmount, out var min)) source = source.Where(e => e.Amount >= min);
+        if (decimal.TryParse(FilterMaxAmount, out var max)) source = source.Where(e => e.Amount <= max);
+        return source;
+    }
+
+    private IEnumerable<PaymentDto> ApplyDateAmountToPayments(IEnumerable<PaymentDto> source)
+    {
+        var from = FilterFromDate;
+        var to   = FilterToDate.Date.AddDays(1).AddTicks(-1);
+        source = source.Where(p => { var d = p.PaymentDate ?? p.CreatedAt.DateTime; return d >= from && d <= to; });
+        if (decimal.TryParse(FilterMinAmount, out var min)) source = source.Where(p => p.Amount >= min);
+        if (decimal.TryParse(FilterMaxAmount, out var max)) source = source.Where(p => p.Amount <= max);
+        return source;
     }
 
     [RelayCommand]
@@ -100,6 +132,29 @@ public partial class MainPageModel : ObservableObject
 
     [RelayCommand]
     private void TogglePayments() => IsPaymentsExpanded = !IsPaymentsExpanded;
+
+    [RelayCommand]
+    private void ApplyFilters()
+    {
+        FilterExpenses();
+        FilterPayments();
+        IsFilterActive = FilterFromDate != _defaultFromDate || FilterToDate != _defaultToDate
+                      || !string.IsNullOrWhiteSpace(FilterMinAmount) || !string.IsNullOrWhiteSpace(FilterMaxAmount);
+        FilterPanelCloseRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    [RelayCommand]
+    private void ResetFilters()
+    {
+        FilterFromDate  = _defaultFromDate;
+        FilterToDate    = _defaultToDate;
+        FilterMinAmount = string.Empty;
+        FilterMaxAmount = string.Empty;
+        IsFilterActive  = false;
+        FilterExpenses();
+        FilterPayments();
+        FilterPanelCloseRequested?.Invoke(this, EventArgs.Empty);
+    }
 
     [RelayCommand]
     private Task NavigateToExpense(ChargeDto charge) => Shell.Current.GoToAsync($"expense?id={charge.Id}");

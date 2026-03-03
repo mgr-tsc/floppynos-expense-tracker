@@ -47,8 +47,35 @@
                             UserName="{Binding UserName}"
                             UserInitials="{Binding UserInitials}" />
 
-                        <!-- Household indicator -->
-                        <controls:HouseholdSwitcher HouseholdName="{Binding HouseholdName}" />
+                        <!-- Household indicator + Filters pill -->
+                        <Grid ColumnDefinitions="*,Auto">
+                            <controls:HouseholdSwitcher Grid.Column="0" HouseholdName="{Binding HouseholdName}" />
+                            <Border Grid.Column="1"
+                                    Background="{StaticResource CardSurface}"
+                                    Stroke="{StaticResource StrokeColor}"
+                                    StrokeThickness="1"
+                                    Padding="12,7"
+                                    HorizontalOptions="End">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="20" />
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnFiltersTapped" />
+                                </Border.GestureRecognizers>
+                                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                    <Label Text="{x:Static fonts:FluentUi.options_20_regular}"
+                                           FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                                           FontSize="16"
+                                           TextColor="{StaticResource GoldAccent}"
+                                           VerticalOptions="Center" />
+                                    <Label Text="Filters"
+                                           FontFamily="SpaceGrotesk"
+                                           FontSize="13"
+                                           TextColor="White"
+                                           VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </Border>
+                        </Grid>
 
                         <!-- Balance card -->
                         <controls:BalanceView BindingContext="{Binding Balance}" />
@@ -341,6 +368,24 @@
 
         <!-- Floating tab bar overlay -->
         <controls:CustomTabBar VerticalOptions="End" ActiveTabIndex="0" />
+
+        <!-- Filter scrim -->
+        <BoxView x:Name="FilterScrim"
+                 BackgroundColor="#000000"
+                 Opacity="0"
+                 IsVisible="False"
+                 InputTransparent="True">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnScrimTapped" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
+
+        <!-- Filter panel (slides in from right) -->
+        <controls:FilterPanel x:Name="FilterPanelView"
+                              BindingContext="{Binding}"
+                              VerticalOptions="Fill"
+                              HorizontalOptions="End"
+                              CloseRequested="OnFilterPanelCloseRequested" />
 
     </Grid>
 </ContentPage>

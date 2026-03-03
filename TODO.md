@@ -43,15 +43,6 @@ Known issues and pending features, in rough priority order.
 
 ---
 
-### [DESIGN-04] Date filtering for Charges and Payments on MainPage
-**Page:** `MainPage` / `MainPageModel`
-**Description:** Add the ability to filter the Charges and Payments lists by date range. By default, only records from the **last 2 months** should be loaded. Users should be able to adjust the date range via a filter control (e.g. a date range picker or preset chips: Last Month / Last 3 Months / All Time).
-**Fix area:**
-- `MainPageModel`: apply a default date filter (`DateFrom = DateTime.Now.AddMonths(-2)`) when calling `ListByHouseholdAsync`. Add observable `DateFrom` / `DateTo` properties and re-filter on change.
-- `ChargeRepository` / `PaymentRepository`: add an overload or parameter to `ListByHouseholdAsync` that accepts a date range.
-- `MainPage.xaml`: add date filter UI above or alongside the status filter tabs.
-
----
 
 ## Notes
 - RLS policies must be verified for all new DB operations (charges, payments, households). No `SECURITY DEFINER` bypasses.

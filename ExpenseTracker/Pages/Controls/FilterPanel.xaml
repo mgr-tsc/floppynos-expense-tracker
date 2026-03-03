@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pageModels="clr-namespace:ExpenseTracker.PageModels"
+             xmlns:fonts="clr-namespace:ExpenseTracker.Resources.Fonts"
+             x:Class="ExpenseTracker.Pages.Controls.FilterPanel"
+             x:DataType="pageModels:MainPageModel"
+             HorizontalOptions="End"
+             WidthRequest="320">
+
+    <Border Background="{StaticResource CardSurface}"
+            Stroke="{StaticResource StrokeColor}"
+            StrokeThickness="1">
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="24,0,0,24" />
+        </Border.StrokeShape>
+
+        <Grid RowDefinitions="Auto,*,Auto" Padding="20,0">
+
+            <!-- Row 0: Header -->
+            <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Padding="0,24,0,16">
+                <Label Grid.Column="0"
+                       Text="{x:Static fonts:FluentUi.options_20_regular}"
+                       FontFamily="{x:Static fonts:FluentUi.fontFamily}"
+                       FontSize="20"
+                       TextColor="{StaticResource GoldAccent}"
+                       VerticalOptions="Center" />
+                <Label Grid.Column="1"
+                       Text="FILTERS"
+                       FontFamily="SpaceGrotesk-Bold"
+                       FontSize="13"
+                       CharacterSpacing="2"
+                       TextColor="White"
+                       Margin="10,0"
+                       VerticalOptions="Center" />
+                <Border Grid.Column="2"
+                        Background="{StaticResource ElevatedSurface}"
+                        Stroke="Transparent"
+                        StrokeThickness="0"
+                        WidthRequest="32"
+                        HeightRequest="32"
+                        VerticalOptions="Center">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="16" />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnCloseButtonTapped" />
+                    </Border.GestureRecognizers>
+                    <Label Text="✕"
+                           FontSize="14"
+                           TextColor="{StaticResource MutedText}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
+                </Border>
+            </Grid>
+
+            <!-- Row 1: Scrollable body -->
+            <ScrollView Grid.Row="1">
+                <VerticalStackLayout Spacing="24">
+
+                    <!-- DATE section -->
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="DATE" Style="{StaticResource SectionLabelStyle}" />
+
+                        <!-- From date -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="From date"
+                                   FontFamily="SpaceGrotesk"
+                                   FontSize="12"
+                                   TextColor="{StaticResource DimmedText}" />
+                            <Grid RowDefinitions="52,2" BackgroundColor="{StaticResource CardSurface}">
+                                <DatePicker Grid.Row="0"
+                                            Date="{Binding FilterFromDate}"
+                                            Format="MMM d, yyyy"
+                                            TextColor="White"
+                                            FontFamily="SpaceGrotesk"
+                                            FontSize="14"
+                                            BackgroundColor="Transparent"
+                                            VerticalOptions="Center" />
+                                <BoxView Grid.Row="1"
+                                         Color="{StaticResource StrokeColor}"
+                                         HeightRequest="2" />
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <!-- To date -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="To date"
+                                   FontFamily="SpaceGrotesk"
+                                   FontSize="12"
+                                   TextColor="{StaticResource DimmedText}" />
+                            <Grid RowDefinitions="52,2" BackgroundColor="{StaticResource CardSurface}">
+                                <DatePicker Grid.Row="0"
+                                            Date="{Binding FilterToDate}"
+                                            Format="MMM d, yyyy"
+                                            TextColor="White"
+                                            FontFamily="SpaceGrotesk"
+                                            FontSize="14"
+                                            BackgroundColor="Transparent"
+                                            VerticalOptions="Center" />
+                                <BoxView Grid.Row="1"
+                                         Color="{StaticResource StrokeColor}"
+                                         HeightRequest="2" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+
+                    <!-- AMOUNT section -->
+                    <VerticalStackLayout Spacing="12">
+                        <Label Text="AMOUNT" Style="{StaticResource SectionLabelStyle}" />
+
+                        <Grid ColumnDefinitions="*,12,*">
+                            <!-- Min -->
+                            <VerticalStackLayout Grid.Column="0" Spacing="6">
+                                <Label Text="Min"
+                                       FontFamily="SpaceGrotesk"
+                                       FontSize="12"
+                                       TextColor="{StaticResource DimmedText}" />
+                                <Grid RowDefinitions="52,2" BackgroundColor="{StaticResource CardSurface}">
+                                    <Entry Grid.Row="0"
+                                           Keyboard="Numeric"
+                                           Text="{Binding FilterMinAmount}"
+                                           Placeholder="0.00"
+                                           PlaceholderColor="{StaticResource DimmedText}"
+                                           TextColor="White"
+                                           FontFamily="SpaceGrotesk"
+                                           FontSize="14"
+                                           BackgroundColor="Transparent"
+                                           VerticalOptions="Center" />
+                                    <BoxView Grid.Row="1"
+                                             Color="{StaticResource StrokeColor}"
+                                             HeightRequest="2" />
+                                </Grid>
+                            </VerticalStackLayout>
+
+                            <!-- Max -->
+                            <VerticalStackLayout Grid.Column="2" Spacing="6">
+                                <Label Text="Max"
+                                       FontFamily="SpaceGrotesk"
+                                       FontSize="12"
+                                       TextColor="{StaticResource DimmedText}" />
+                                <Grid RowDefinitions="52,2" BackgroundColor="{StaticResource CardSurface}">
+                                    <Entry Grid.Row="0"
+                                           Keyboard="Numeric"
+                                           Text="{Binding FilterMaxAmount}"
+                                           Placeholder="∞"
+                                           PlaceholderColor="{StaticResource DimmedText}"
+                                           TextColor="White"
+                                           FontFamily="SpaceGrotesk"
+                                           FontSize="14"
+                                           BackgroundColor="Transparent"
+                                           VerticalOptions="Center" />
+                                    <BoxView Grid.Row="1"
+                                             Color="{StaticResource StrokeColor}"
+                                             HeightRequest="2" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <!-- Row 2: Footer -->
+            <Grid Grid.Row="2" ColumnDefinitions="*,12,*" Padding="0,16,0,36">
+                <Button Grid.Column="0"
+                        Text="RESET"
+                        Command="{Binding ResetFiltersCommand}"
+                        BackgroundColor="Transparent"
+                        BorderColor="{StaticResource StrokeColor}"
+                        BorderWidth="1"
+                        TextColor="White"
+                        CornerRadius="12"
+                        HeightRequest="48"
+                        FontFamily="SpaceGrotesk-SemiBold"
+                        FontSize="13" />
+                <Button Grid.Column="2"
+                        Text="APPLY"
+                        Command="{Binding ApplyFiltersCommand}"
+                        BackgroundColor="{StaticResource GoldAccent}"
+                        TextColor="{StaticResource AppBackground}"
+                        CornerRadius="12"
+                        HeightRequest="48"
+                        FontFamily="SpaceGrotesk-SemiBold"
+                        FontSize="13" />
+            </Grid>
+
+        </Grid>
+    </Border>
+
+</ContentView>
