@@ -20,10 +20,10 @@
         <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
 
         <!-- Display name -->
-        <ApplicationTitle>Floppyno's</ApplicationTitle>
+        <ApplicationTitle>Floppynos</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>com.companyname.ExpenseTracker.ExpenseTracker</ApplicationId>
+        <ApplicationId>com.keepersoft.ExpenseTracker</ApplicationId>
 
         <!-- Versions -->
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>

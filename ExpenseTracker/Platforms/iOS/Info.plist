@@ -32,7 +32,7 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>com.yourcompany.expensetracker</string>
+			<string>com.keepersoft.ExpenseTracker</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>expensetracker</string>
