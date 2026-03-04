@@ -14,7 +14,7 @@ ExpenseTracker/Resources/Raw/supabase.env
 *.csproj.user
 *.user
 *.sln.user
-
+docs/
 # IDE folders
 .vs/
 .idea/

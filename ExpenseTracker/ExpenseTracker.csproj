@@ -42,7 +42,7 @@
     <!-- iOS device signing — personal values live in ExpenseTracker.csproj.user (gitignored) -->
     <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">
         <ProvisioningType>Automatic</ProvisioningType>
-        <CodesignEntitlements>Platforms\iOS\Entitlements.plist</CodesignEntitlements>
+        <CodesignEntitlements>Platforms/iOS/Entitlements.plist</CodesignEntitlements>
     </PropertyGroup>
 
     <!-- Hot Reload for Debug builds -->
