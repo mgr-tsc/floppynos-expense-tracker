@@ -169,32 +169,19 @@
                                     HeightRequest="52"
                                     Margin="4,0" />
                             <!-- + NEW button -->
-                            <Border Grid.Row="0" Grid.Column="1"
+                            <Button Grid.Row="0" Grid.Column="1"
+                                    Text="+ NEW"
+                                    Command="{Binding AddCategoryCommand}"
                                     IsVisible="{Binding IsEditable}"
-                                    Background="{StaticResource ElevatedSurface}"
-                                    Stroke="{StaticResource StrokeColor}"
-                                    StrokeThickness="1"
-                                    Margin="8,12,12,12">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="8" />
-                                </Border.StrokeShape>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding AddCategoryCommand}" />
-                                </Border.GestureRecognizers>
-                                <HorizontalStackLayout Spacing="4" Padding="10,0">
-                                    <Label Text="{x:Static fonts:FluentUi.add_circle_20_regular}"
-                                           FontFamily="{x:Static fonts:FluentUi.fontFamily}"
-                                           FontSize="12"
-                                           TextColor="{StaticResource GoldAccent}"
-                                           VerticalOptions="Center" />
-                                    <Label Text="NEW"
-                                           FontFamily="SpaceGrotesk-Bold"
-                                           FontSize="10"
-                                           TextColor="{StaticResource GoldAccent}"
-                                           CharacterSpacing="1.5"
-                                           VerticalOptions="Center" />
-                                </HorizontalStackLayout>
-                            </Border>
+                                    BackgroundColor="Transparent"
+                                    BorderColor="{StaticResource StrokeColor}"
+                                    BorderWidth="1"
+                                    TextColor="{StaticResource GoldAccent}"
+                                    CornerRadius="12"
+                                    FontSize="11"
+                                    Padding="10,4"
+                                    HeightRequest="28"
+                                    Margin="8,12,12,12" />
                             <BoxView Grid.Row="1" Grid.ColumnSpan="2"
                                      Color="{StaticResource StrokeColor}" />
                         </Grid>

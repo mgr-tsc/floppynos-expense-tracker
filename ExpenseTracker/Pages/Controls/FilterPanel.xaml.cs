@@ -23,6 +23,6 @@ public partial class FilterPanel : ContentView
         IsVisible = false;
     }
 
-    private void OnCloseButtonTapped(object? sender, TappedEventArgs e)
+    private void OnCloseButtonTapped(object? sender, EventArgs eventArgs)
         => CloseRequested?.Invoke(this, EventArgs.Empty);
 }

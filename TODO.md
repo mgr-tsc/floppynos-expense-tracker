@@ -6,6 +6,7 @@ Known issues and pending features, in rough priority order.
 
 ## Bugs
 
+
 ### [BUG-04b] * No DB-level constraint preventing future dates on CHARGE and PAYMENT
 **Description:** Even with app-level validation in place, there is no database constraint stopping a future `date` value from being inserted directly (e.g. via API or SQL editor).
 **Fix area:** Add a `CHECK` constraint to the CHARGE and PAYMENT tables in Supabase: `CHECK (date <= CURRENT_DATE)`.
